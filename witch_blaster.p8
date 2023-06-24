@@ -4,6 +4,7 @@ __lua__
 --main tab
 function _init()
 	state="game"
+	frame=0
 
 	--table of enemies
 	enemy_objs={}
@@ -26,15 +27,21 @@ function _init()
 		points=0,
 		powerup="",
 		blast=false,
+		sprite=1,
+		up=false,
+		down=false,
 		update=function(self)
+			--reset variables
+			self.down,self.up=false,false
+
 			--movement
 			self.velocity_x*=0.8
 			self.velocity_y*=0.8
 
 			if (btn(0)) self.velocity_x-=1
 			if (btn(1)) self.velocity_x+=1
-			if (btn(2)) self.velocity_y-=1
-			if (btn(3)) self.velocity_y+=1
+			if (btn(2)) self.velocity_y-=1 self.down=true
+			if (btn(3)) self.velocity_y+=1 self.up=true
 
 			self.velocity_x=mid(-2,self.velocity_x,2)
 			self.velocity_y=mid(-2,self.velocity_y,2)
@@ -44,9 +51,20 @@ function _init()
 
 			--bullet
 			if (btnp(5) and not (#bullet_objs>20)) make_bullet_obj(self.x,self.y)
+
+			--animate sprite
+			if frame>30 then
+				self.sprite=1
+			else
+				self.sprite=3
+			end
+
+			--change sprite if moving up or down
+			if (self.up) self.sprite=1
+			if (self.down) self.sprite=3
 		end,
 		draw=function(self)
-			outlined_sprites(1,12,self.x-8,self.y-8,2,2)
+			outlined_sprites(self.sprite,12,self.x-8,self.y-8,2,2)
 
 			--hit box
 			circ(self.x,self.y,self.width/2,8)
@@ -70,6 +88,8 @@ function _update()
 	elseif state=="end" then
 		update_end()
 	end
+
+	frame_counter(60)
 end
 
 function _draw()
@@ -155,6 +175,7 @@ function make_enemy_obj(name,x,y,props)
 		velocity_y=0,
 		hp=0,
 		dmg=0,
+		sprite=0,
 		update=function(self)
 		end,
 		draw=function(self)
@@ -196,11 +217,19 @@ function make_worm(x,y)
 	return make_enemy_obj("worm",x,y,{
 		width=12,
 		hp=5,
+		sprite=14,
 		update=function(self)
 			self:check_collision(self)
+
+			--animate sprite
+			if frame>30 then
+				self.sprite=30
+			else
+				self.sprite=14
+			end
 		end,
 		draw=function(self)
-			outlined_sprites(14,8,self.x-8,self.y-2,2,1)
+			outlined_sprites(self.sprite,8,self.x-8,self.y-2,2,1)
 
 			--hitbox
 			circ(self.x,self.y,self.width/2,11)
@@ -309,6 +338,12 @@ function outlined_sprites(sprite,colour,x,y,width,height,flip_x,flip_y)
 	spr(sprite,x,y,width,height,flip_x,flip_y)
 end
 
+--count up frames
+function frame_counter(limit)
+	frame+=1
+
+	if (frame>limit) frame=0
+end
 
 __gfx__
 00000000000000001110000000000000000000000000000077700000000000000000000000000000000000000000000000000000000000000000000000000000
