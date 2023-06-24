@@ -46,7 +46,7 @@ function _init()
 			if (btnp(5) and not (#bullet_objs>20)) make_bullet_obj(self.x,self.y)
 		end,
 		draw=function(self)
-			spr(1,self.x-8,self.y-8,2,2)
+			outlined_sprites(1,12,self.x-8,self.y-8,2,2)
 
 			--hit box
 			circ(self.x,self.y,self.width/2,8)
@@ -200,7 +200,7 @@ function make_worm(x,y)
 			self:check_collision(self)
 		end,
 		draw=function(self)
-			spr(14,self.x-8,self.y-2,2,1)
+			outlined_sprites(14,8,self.x-8,self.y-2,2,1)
 
 			--hitbox
 			circ(self.x,self.y,self.width/2,11)
@@ -225,8 +225,8 @@ function make_bullet_obj(x,y)
 			if (self.x>(player.x+128)) del(bullet_objs,self)
 		end,
 		draw=function(self)
-			circfill(self.x,self.y,self.width/2,1)
-			circfill(self.x,self.y,(self.width/2)-1,10)
+			circfill(self.x,self.y,self.width/2,12)
+			circfill(self.x,self.y,(self.width/2)-1,7)
 		end
 	}
 	--add object table to enemies table
@@ -289,6 +289,24 @@ function remove(list)
 	for i=1,#list do
 		del(list, list[1])
 	end
+end
+
+--draw srites with an outline
+function outlined_sprites(sprite,colour,x,y,width,height,flip_x,flip_y)
+	--set all colours in palette to outline colour
+	for i=1,15 do
+		pal(i,colour)
+	end
+
+	--draw outline of sprite
+	spr(sprite,x,y+1,width,height,flip_x,flip_y)
+	spr(sprite,x+1,y,width,height,flip_x,flip_y)
+	spr(sprite,x,y-1,width,height,flip_x,flip_y)
+	spr(sprite,x-1,y,width,height,flip_x,flip_y)
+
+	--reset palette and draw sprite
+	pal()
+	spr(sprite,x,y,width,height,flip_x,flip_y)
 end
 
 
