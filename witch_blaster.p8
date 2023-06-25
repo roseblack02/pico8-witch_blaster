@@ -9,6 +9,9 @@ function _init()
 	map_speed,front_speed,back_speed=0.5,0.6,0.4
 	blast_text=7
 
+	--particle effects
+	particle={}
+
 	--table of enemies
 	enemy_objs={}
 
@@ -72,7 +75,7 @@ function _init()
 			if (btnp(5)) make_bullet_obj(self.x,self.y,self.shot_speed)
 
 			--blast
-			if (btnp(4) and self.e_level==116) self.blast=true
+			if (btnp(4) and self.e_level==116) self.blast=true explosion(self.x+2,self.y-10)
 
 			if (self.blast) self.e_level-=2 make_bullet_obj(self.x,self.y,6)
 
@@ -113,6 +116,12 @@ function _init()
 		draw=function(self)
 			outlined_sprites(self.sprite,12,self.x-8,self.y-8,2,2)
 
+			--draw blast effect
+			if (self.blast) draw_explosion({1,12,12,7})
+
+			--draw hit effect
+			if (self.is_hit) draw_explosion({7,8,8,2})
+
 			--hit box
 			circ(self.x,self.y,self.width/2,8)
 		end,
@@ -125,6 +134,7 @@ function _init()
 					self.sprite=5
 					self.is_hit=true
 					self.hit_timer+=60
+					explosion(self.x-2,self.y-10)
 
 					--take damage
 					self.hp-=1
@@ -561,7 +571,7 @@ function explosion(x,y)
 		my_particle.y=y 
 		my_particle.sx=rnd()*25-3
 		my_particle.sy=rnd()*25-3
-		my_particle.size=rnd(6)+1
+		my_particle.size=rnd(3)+1
 		my_particle.age=rnd(2)
 		my_particle.max_age=10+rnd(10)
 
@@ -573,18 +583,18 @@ end
 function draw_explosion(colours)
 	for my_particle in all(particle) do
 		--change colour based on time
-		local colour=7
+		local colour=colours[1]
 		if my_particle.age>5 then
-			colour=colours[4]
+			colour=colours[1]
 		end
 		if my_particle.age>7 then
-			colour=colours[3]
-		end
-		if my_particle.age>12 then
 			colour=colours[2]
 		end
+		if my_particle.age>12 then
+			colour=colours[3]
+		end
 		if my_particle.age>15 then
-			colour=colours[1]
+			colour=colours[4]
 		end 
 
 		--draw explosion particles
