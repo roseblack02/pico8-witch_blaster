@@ -10,9 +10,12 @@ function _init()
 	game_pal="trans"
 	blast_text=7
 	level=1
+	wave1,wave2,wave3=true,false,false
+	level_timer=0
 
 	--get level info from text file
 	#include levels.txt
+	levels={level1,level2,level3,level4,level5}
 
 	--particle effects
 	blast_particle={}
@@ -170,7 +173,7 @@ function _init()
 	}
 
 	--test load enemies from level 1
-	load_wave(level1.wave1)
+	--load_wave(level1.wave1)
 
 	--mouse temp
 	poke(0x5f2d, 1)
@@ -242,7 +245,31 @@ function update_game()
 	front_tree_x-=front_speed
 	if (front_tree_x<-127) front_tree_x=0
 
-	--flash test
+	--load waves
+	--count level timer
+	level_timer+=(1/60)
+
+	--load wave based on timer
+	if level_timer<15 and wave1 then
+		--spawn
+		load_wave(levels[level].wave1)
+		--end spawn
+		wave1=false
+		--start next wave
+		wave2=true
+	elseif level_timer>15 and level_timer<30 and wave2 then
+		load_wave(levels[level].wave2)
+		wave2=false
+		wave3=true
+	elseif level_timer>30 and level_timer<45 and wave3 then
+		load_wave(levels[level].wave3)
+		wave3=false
+	elseif level_timer>45 then
+		level_timer=0
+		state="shop"
+	end 
+
+	--flash text
 	if frame>30 then
 		blast_text=7
 	else
