@@ -37,13 +37,18 @@ function _init()
 		dmg=1,
 		e_level=0,
 		blast=false,
-		points=0,
+		coins=0,
 		powerup="",
+		powerup_timer=0,
+		points=0,
 		sprite=1,
 		up=false,
 		down=false,
 		is_hit=false,
 		hit_timer=0,
+		shot_speed_mod=0,
+		burst=false,
+		double=false,
 		update=function(self)
 			--reset variables
 			self.down,self.up=false,false
@@ -52,6 +57,16 @@ function _init()
 			if (self.hit_timer>0) self.hit_timer-=1 screen_shake(0.05)
 			--reset is_hit variable and camera
 			if (self.hit_timer<1) self.is_hit=false camera(0,0)
+
+			--count down powerup timer
+			self.powerup_timer-=1
+			self.powerup_timer=mid(0,self.powerup_timer,180)
+
+			if (self.powerup=="shot speed up") self.shot_speed_mod=4 else self.shot_speed_mod=0
+			if (self.powerup=="double shot") self.double=true else self.double=false
+
+			--reset powerup
+			if (self.powerup_timer<1) self.powerup=""
 
 			--movement
 			self.velocity_x*=0.85
@@ -74,15 +89,26 @@ function _init()
 			self.y=mid(10,self.y,120)
 
 			--bullet
-			if (btnp(5)) make_bullet_obj(self.x,self.y,self.shot_speed)
+			if btnp(5) then
+				if (self.double) make_bullet_obj(self.x,self.y-4,self.shot_speed+self.shot_speed_mod,{false,true,false,false}) make_bullet_obj(self.x,self.y+4,self.shot_speed+self.shot_speed_mod,{false,true,false,false}) else make_bullet_obj(self.x,self.y,self.shot_speed+self.shot_speed_mod,{false,true,false,false})
+			end
 
 			--blast
 			if (btnp(4) and self.e_level==116) self.blast=true explosion(blast_particle,self.x+2,self.y-10)
 
-			if (self.blast) self.e_level-=2 make_bullet_obj(self.x,self.y,6)
+			if (self.blast) self.e_level-=2 make_bullet_obj(self.x,self.y,6,{false,true,false,false})
 
 			--end blast
 			if (self.e_level<1) self.blast=false
+
+			--burst
+			if self.burst then
+				make_bullet_obj(self.x,self.y,self.shot_speed+self.shot_speed_mod,{true,true,false,false})
+				make_bullet_obj(self.x,self.y,self.shot_speed+self.shot_speed_mod,{false,true,true,false})
+				make_bullet_obj(self.x,self.y,self.shot_speed+self.shot_speed_mod,{false,false,true,true})
+				make_bullet_obj(self.x,self.y,self.shot_speed+self.shot_speed_mod,{true,false,false,true})
+				self.burst=false
+			end
 
 			--limit e level
 			self.e_level=mid(0,self.e_level,116)
@@ -150,17 +176,10 @@ function _init()
 
 	--make pickups temp
 	make_health(64,64)
-
+	make_life(70,33)
+	make_coin(55,87)
 	make_estrogen(45,35)
-	make_estrogen(55,35)
-	make_estrogen(65,35)
-	make_estrogen(75,35)
-	make_estrogen(85,35)
-	make_estrogen(95,35)
-	make_estrogen(105,35)
-	make_estrogen(115,35)
-	make_estrogen(45,55)
-	make_estrogen(55,55)
+	make_powerup(42,65)
 
 	--mouse temp
 	poke(0x5f2d, 1)
@@ -289,11 +308,18 @@ function draw_game()
 	end
 
 	--score
-	outlined_text(player.points,56,2,7,1)
+	outlined_text(player.points,64-(#tostr(player.points)*2)-1,2,7,1)
+
+	--powerup
+	outlined_text(player.powerup,64-(#player.powerup*2)-1,12,7,1)
 
 	--lives
-	outlined_text(player.lives,111,2,7,1)
+	outlined_text(player.lives,109,2,7,1)
 	spr(50,119,1)
+
+	--coins
+	outlined_text(player.coins,109,12,7,1)
+	spr(34,119,11)
 
 	--e level
 	circfill(4,123,7,7)
@@ -565,14 +591,18 @@ function make_chicken(x,y)
 end
 
 --make bullets
-function make_bullet_obj(x,y,speed)
+function make_bullet_obj(x,y,speed,direction)
 	--create bullet
 	local obj={
 		x=x,
 		y=y,
 		width=6,
 		update=function(self)
-			self.x+=speed
+			--choose which direction (clockwise bool) to shoot and apply speed
+			if (direction[1]) self.y-=speed
+			if (direction[2]) self.x+=speed
+			if (direction[3]) self.y+=speed
+			if (direction[4]) self.x-=speed
 
 			--delete self if off screen
 			if (self.x>(player.x+128) or self.x<player.x-128 or self.y>(player.y+128) or self.y<player.y-128) del(bullet_objs,self)
@@ -628,6 +658,82 @@ function make_health(x,y)
 		end,
 		draw=function(self)
 			outlined_sprites(33,12,self.x-4,self.y-4,1,1)
+		end
+	})
+end
+
+function make_life(x,y)
+	return make_pickup_obj("life",x,y,{
+		update=function(self)
+			--player pickup
+			if circles_overlapping(self,player) then
+				--add lives
+				player.lives+=1
+
+				--limit lives
+				player.lives=mid(0,player.lives,99)
+
+				--delete self
+				del(pickup_objs,self)
+			end
+
+			--delete self if off screen
+			if (self.x<(player.x-128)) del(pickup_objs,self)
+		end,
+		draw=function(self)
+			outlined_sprites(50,12,self.x-4,self.y-4,1,1)
+		end
+	})
+end
+
+function make_coin(x,y)
+	return make_pickup_obj("coin",x,y,{
+		update=function(self)
+			--player pickup
+			if circles_overlapping(self,player) then
+				--add coins
+				player.coins+=1
+
+				--limit coins
+				player.coins=mid(0,player.coins,99)
+
+				--delete self
+				del(pickup_objs,self)
+			end
+
+			--delete self if off screen
+			if (self.x<(player.x-128)) del(pickup_objs,self)
+		end,
+		draw=function(self)
+			outlined_sprites(34,12,self.x-4,self.y-4,1,1)
+		end
+	})
+end
+
+function make_powerup(x,y)
+	return make_pickup_obj("powerup",x,y,{
+		update=function(self)
+			--player pickup
+			if circles_overlapping(self,player) then
+				--add to powerup timer
+				player.powerup_timer+=180
+
+				--select random powerup
+				local rand=flr(rnd(3))+1
+
+				if (rand==1) player.powerup="shot speed up"
+				if (rand==2) player.powerup="double shot"
+				if (rand==3) player.burst=true
+
+				--delete self
+				del(pickup_objs,self)
+			end
+
+			--delete self if off screen
+			if (self.x<(player.x-128)) del(pickup_objs,self)
+		end,
+		draw=function(self)
+			outlined_sprites(49,12,self.x-4,self.y-4,1,1)
 		end
 	})
 end
