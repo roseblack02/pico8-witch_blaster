@@ -9,6 +9,10 @@ function _init()
 	map_speed,front_speed,back_speed=0.35,0.6,0.4
 	game_pal="trans"
 	blast_text=7
+	level=1
+
+	--get level info from text file
+	#include levels.txt
 
 	--particle effects
 	blast_particle={}
@@ -165,14 +169,8 @@ function _init()
 		end
 	}
 
-	--make enemies temp
-	make_worm(150,98)
-	make_snail(160,104)
-	make_owl(150,42)
-	make_gull(170,64)
-	make_fly(170,72)
-	make_fly(170,67)
-	make_chicken(170,67)
+	--test load enemies from level 1
+	load_wave(level1.wave1)
 
 	--mouse temp
 	poke(0x5f2d, 1)
@@ -747,7 +745,7 @@ function make_estrogen(x,y)
 	return make_pickup_obj("estrogen",x,y,{
 		update=function(self)
 			self.x-=0.25
-			
+
 			--player pickup
 			if circles_overlapping(self,player) then
 				--add e
@@ -799,6 +797,46 @@ function remove(list)
 	local i
 	for i=1,#list do
 		del(list, list[1])
+	end
+end
+
+--load wave from level file
+function load_wave(wave)
+	--check if there are any specified enemies for the chosen wave
+	if wave.flies then
+		for fly in all(level1.wave1.flies) do
+			make_fly(fly[1],fly[2])
+		end
+	end
+
+	if wave.gulls then
+		for gull in all(wave.gulls) do
+			make_gull(gull[1],gull[2])
+		end
+	end
+
+	if wave.owls then
+		for owl in all(wave.owls) do
+			make_owl(owl[1],owl[2])
+		end
+	end
+
+	if wave.worms then
+		for worm in all(wave.worms) do
+			make_worm(worm[1],worm[2])
+		end
+	end
+
+	if wave.snails then
+		for snail in all(wave.snails) do
+			make_snail(snail[1],snail[2])
+		end
+	end
+
+	if wave.chickens then
+		for chicken in all(wave.chickens) do
+			make_chicken(chicken[1],chicken[2])
+		end
 	end
 end
 
