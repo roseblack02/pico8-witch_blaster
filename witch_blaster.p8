@@ -6,11 +6,13 @@ function _init()
 	state="game"
 	frame=0
 	map_x,front_tree_x,back_tree_x=0,0,0
-	map_speed,front_speed,back_speed=0.5,0.6,0.4
+	map_speed,front_speed,back_speed=0.35,0.6,0.4
+	game_pal="normal"
 	blast_text=7
 
 	--particle effects
-	particle={}
+	blast_particle={}
+	hit_particle={}
 
 	--table of enemies
 	enemy_objs={}
@@ -75,7 +77,7 @@ function _init()
 			if (btnp(5)) make_bullet_obj(self.x,self.y,self.shot_speed)
 
 			--blast
-			if (btnp(4) and self.e_level==116) self.blast=true explosion(self.x+2,self.y-10)
+			if (btnp(4) and self.e_level==116) self.blast=true explosion(blast_particle,self.x+2,self.y-10)
 
 			if (self.blast) self.e_level-=2 make_bullet_obj(self.x,self.y,6)
 
@@ -116,12 +118,6 @@ function _init()
 		draw=function(self)
 			outlined_sprites(self.sprite,12,self.x-8,self.y-8,2,2)
 
-			--draw blast effect
-			if (self.blast) draw_explosion({1,12,12,7})
-
-			--draw hit effect
-			if (self.is_hit) draw_explosion({7,8,8,2})
-
 			--hit box
 			circ(self.x,self.y,self.width/2,8)
 		end,
@@ -134,7 +130,7 @@ function _init()
 					self.sprite=5
 					self.is_hit=true
 					self.hit_timer+=60
-					explosion(self.x-2,self.y-10)
+					explosion(hit_particle,self.x-2,self.y-10)
 
 					--take damage
 					self.hp-=1
@@ -144,7 +140,8 @@ function _init()
 	}
 
 	--make enemies temp
-	make_worm(100,98)
+	make_worm(150,98)
+	make_owl(150,42)
 
 	--make pickups temp
 	make_health(64,64)
@@ -157,8 +154,6 @@ function _init()
 	make_estrogen(95,35)
 	make_estrogen(105,35)
 	make_estrogen(115,35)
-	make_estrogen(125,35)
-	make_estrogen(135,35)
 	make_estrogen(45,55)
 	make_estrogen(55,55)
 
@@ -275,6 +270,10 @@ function draw_game()
 	end
 	player:draw()
 
+	--explosions
+	draw_explosion(hit_particle,{7,8,8,2})
+	draw_explosion(blast_particle,{1,12,12,7})
+
 	--hud
 	--hp
 	for hearts=1,player.max_hp do
@@ -309,9 +308,6 @@ function draw_game()
 
 	print("px:"..flr(player.x),25,100,2)
 	print("py:"..flr(player.y),25,108,2)
-
-	print("px:"..flr(map_x),50,100,2)
-
 end
 
 function update_shop()
@@ -345,6 +341,8 @@ function make_enemy_obj(name,x,y,props)
 		hp=0,
 		dmg=0,
 		sprite=0,
+		is_hit=false,
+		points=0,
 		update=function(self)
 		end,
 		draw=function(self)
@@ -357,11 +355,17 @@ function make_enemy_obj(name,x,y,props)
 					--take damage
 					self.hp-=player.dmg
 
+					--hit effect
+					explosion(hit_particle,self.x-6,self.y-10)
+					self.is_hit=true
+
 					--delete bullet
 					del(bullet_objs,bullet)
 
 					--delete self if dead
-					if (self.hp<1) del(enemy_objs,self) player.points+=100
+					if (self.hp<1) del(enemy_objs,self) player.points+=self.points
+				else
+					self.is_hit=false
 				end
 			end
 			
@@ -382,7 +386,10 @@ function make_worm(x,y)
 		width=12,
 		hp=5,
 		sprite=14,
+		points=100,
 		update=function(self)
+			self.x-=0.25
+
 			self:check_collision(self)
 
 			--animate sprite
@@ -398,6 +405,36 @@ function make_worm(x,y)
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-8,self.y-2,2,1)
 
+			--hitbox
+			circ(self.x,self.y,self.width/2,14)
+		end
+	})
+end
+
+function make_owl(x,y)
+	return make_enemy_obj("owl",x,y,{
+		width=16,
+		hp=8,
+		sprite=42,
+		points=200,
+		update=function(self)
+			self.x-=0.5
+
+			self:check_collision(self)
+
+			--animate sprite
+			if frame>30 then
+				self.sprite=42
+			else
+				self.sprite=44
+			end
+
+			--delete self if off screen
+			if (self.x<(player.x-128)) del(enemy_objs,self)
+		end,
+		draw=function(self)
+			outlined_sprites(self.sprite,8,self.x-8,self.y-8,2,2)
+				
 			--hitbox
 			circ(self.x,self.y,self.width/2,14)
 		end
@@ -543,7 +580,13 @@ function outlined_sprites(sprite,colour,x,y,width,height,flip_x,flip_y)
 
 	--reset palette and draw sprite
 	pal()
-	pal({1,2,3,4,5,6,7,8,9,10,-5},1)
+
+	if game_pal=="trans" then
+		pal({-15,-14,2,-3,-4,6,7,-8,12,14,-3,12,13,14,6},1)
+	else
+		pal({1,2,3,4,5,6,7,8,9,10,-5},1)
+	end
+
 	spr(sprite,x,y,width,height,flip_x,flip_y)
 end
 
@@ -564,7 +607,7 @@ function outlined_text(text,x,y,colour,outline)
 end
 
 --create explosion particles
-function explosion(x,y)
+function explosion(type,x,y)
 	for i=1,10 do
 		local my_particle={}
 		my_particle.x=x 
@@ -575,13 +618,13 @@ function explosion(x,y)
 		my_particle.age=rnd(2)
 		my_particle.max_age=10+rnd(10)
 
-		add(particle,my_particle)
+		add(type,my_particle)
 	end
 end
 
 --draw explosion
-function draw_explosion(colours)
-	for my_particle in all(particle) do
+function draw_explosion(type,colours)
+	for my_particle in all(type) do
 		--change colour based on time
 		local colour=colours[1]
 		if my_particle.age>5 then
@@ -614,7 +657,7 @@ function draw_explosion(colours)
 		if my_particle.age>my_particle.max_age then
 			my_particle.size-=0.5
 			if my_particle.size<0 then
-				del(particle,my_particle)
+				del(type,my_particle)
 			end
 		end
 	end
