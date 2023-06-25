@@ -28,7 +28,7 @@ function _init()
 		hp=3,
 		max_hp=3,
 		lives=3,
-		shot_speed=3,
+		shot_speed=2,
 		dmg=1,
 		e_level=0,
 		blast=false,
@@ -43,10 +43,10 @@ function _init()
 			--reset variables
 			self.down,self.up=false,false
 
-			--count down hit timer and reset is_hit variable
-			self.hit_timer-=1
-			self.hit_timer=mid(0,self.hit_timer,60)
-			if (self.hit_timer<1) self.is_hit=false
+			--count down hit timer
+			if (self.hit_timer>0) self.hit_timer-=1 screen_shake(0.05)
+			--reset is_hit variable and camera
+			if (self.hit_timer<1) self.is_hit=false camera(0,0)
 
 			--movement
 			self.velocity_x*=0.85
@@ -608,6 +608,12 @@ function draw_explosion(colours)
 			end
 		end
 	end
+end
+
+--screen shake
+function screen_shake(intesity)
+	local shakex,shakey=16-rnd(32),16-rnd(32)
+	camera(shakex*intesity,shakey*intesity)
 end
 
 -->8
