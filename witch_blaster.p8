@@ -7,7 +7,7 @@ function _init()
 	frame=0
 	map_x,front_tree_x,back_tree_x=0,0,0
 	map_speed,front_speed,back_speed=0.35,0.6,0.4
-	game_pal="normal"
+	game_pal="trans"
 	blast_text=7
 
 	--particle effects
@@ -173,13 +173,6 @@ function _init()
 	make_fly(170,72)
 	make_fly(170,67)
 	make_chicken(170,67)
-
-	--make pickups temp
-	make_health(64,64)
-	make_life(70,33)
-	make_coin(55,87)
-	make_estrogen(45,35)
-	make_powerup(42,65)
 
 	--mouse temp
 	poke(0x5f2d, 1)
@@ -395,7 +388,18 @@ function make_enemy_obj(name,x,y,props)
 					del(bullet_objs,bullet)
 
 					--delete self if dead
-					if (self.hp<1) del(enemy_objs,self) player.points+=self.points
+					if self.hp<1 then 
+						del(enemy_objs,self) 
+						player.points+=self.points
+						--randomly drop a pickup
+						local rand=flr(rnd(7))+1
+
+						if (rand==1) make_estrogen(self.x,self.y)
+						if (rand==2) make_health(self.x,self.y)
+						if (rand==3) make_life(self.x,self.y)
+						if (rand==4) make_powerup(self.x,self.y)
+						if (rand>4) make_coin(self.x,self.y)
+					end
 				else
 					self.is_hit=false
 				end
@@ -628,6 +632,8 @@ end
 function make_health(x,y)
 	return make_pickup_obj("health",x,y,{
 		update=function(self)
+			self.x-=0.25
+
 			--player pickup
 			if circles_overlapping(self,player) then
 				--add hp
@@ -651,6 +657,8 @@ end
 function make_life(x,y)
 	return make_pickup_obj("life",x,y,{
 		update=function(self)
+			self.x-=0.25
+
 			--player pickup
 			if circles_overlapping(self,player) then
 				--add lives
@@ -677,6 +685,8 @@ end
 function make_coin(x,y)
 	return make_pickup_obj("coin",x,y,{
 		update=function(self)
+			self.x-=0.25
+
 			--player pickup
 			if circles_overlapping(self,player) then
 				--add coins
@@ -703,6 +713,8 @@ end
 function make_powerup(x,y)
 	return make_pickup_obj("powerup",x,y,{
 		update=function(self)
+			self.x-=0.25
+
 			--player pickup
 			if circles_overlapping(self,player) then
 				--add to powerup timer
@@ -734,6 +746,8 @@ end
 function make_estrogen(x,y)
 	return make_pickup_obj("estrogen",x,y,{
 		update=function(self)
+			self.x-=0.25
+			
 			--player pickup
 			if circles_overlapping(self,player) then
 				--add e
