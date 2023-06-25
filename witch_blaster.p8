@@ -27,19 +27,18 @@ function _init()
 		velocity_y=0,
 		hp=3,
 		max_hp=3,
+		lives=3,
+		shot_speed=3,
 		dmg=1,
 		e_level=0,
-		max_e_level=0,
+		blast=false,
 		points=0,
 		powerup="",
-		blast=false,
 		sprite=1,
 		up=false,
 		down=false,
 		is_hit=false,
 		hit_timer=0,
-		lives=3,
-		shot_speed=2,
 		update=function(self)
 			--reset variables
 			self.down,self.up=false,false
@@ -75,7 +74,7 @@ function _init()
 			--blast
 			if (btnp(4) and self.e_level==116) self.blast=true
 
-			if (self.blast) self.e_level-=2 make_bullet_obj(self.x,self.y,5)
+			if (self.blast) self.e_level-=2 make_bullet_obj(self.x,self.y,6)
 
 			--end blast
 			if (self.e_level<1) self.blast=false
@@ -139,6 +138,7 @@ function _init()
 
 	--make pickups temp
 	make_health(64,64)
+
 	make_estrogen(45,35)
 	make_estrogen(55,35)
 	make_estrogen(65,35)
@@ -147,6 +147,8 @@ function _init()
 	make_estrogen(95,35)
 	make_estrogen(105,35)
 	make_estrogen(115,35)
+	make_estrogen(125,35)
+	make_estrogen(135,35)
 	make_estrogen(45,55)
 	make_estrogen(55,55)
 
@@ -287,7 +289,7 @@ function draw_game()
 	rectfill(cam_x+9,cam_y+121,cam_x+9+(player.e_level),cam_y+124,12)
 
 	--blast prompt
-	if (player.e_level==116) outlined_text("blast 🅾️",cam_x+48,cam_y+112,blast_text,1) line(cam_x+56,cam_y+117,cam_x+65,cam_y+117,1)
+	if (player.e_level==116) outlined_text("blast 🅾️",cam_x+48,cam_y+112,blast_text,1)
 
 	--debug info
 	print("mx:"..mouse_x,cam_x,cam_y+100,8)
@@ -538,6 +540,7 @@ function outlined_text(text,x,y,colour,outline)
 	print(text,x+1,y-1,outline)
 	print(text,x+1,y,outline)
 	print(text,x+1,y+1,outline)
+	print(text,x,y+1,outline)
 	print(text,x-1,y+1,outline)
 	print(text,x-1,y,outline)
 	print(text,x-1,y-1,outline)
