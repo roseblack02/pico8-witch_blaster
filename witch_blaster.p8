@@ -172,9 +172,6 @@ function _init()
 		end
 	}
 
-	--test load enemies from level 1
-	--load_wave(level1.wave1)
-
 	--mouse temp
 	poke(0x5f2d, 1)
 end
@@ -266,6 +263,7 @@ function update_game()
 		wave3=false
 	elseif level_timer>45 then
 		level_timer=0
+		wave1=true
 		state="shop"
 	end 
 
@@ -417,7 +415,7 @@ function make_enemy_obj(name,x,y,props)
 						del(enemy_objs,self) 
 						player.points+=self.points
 						--randomly drop a pickup
-						local rand=flr(rnd(7))+1
+						local rand=flr(rnd(15))+1
 
 						if (rand==1) make_estrogen(self.x,self.y)
 						if (rand==2) make_health(self.x,self.y)
