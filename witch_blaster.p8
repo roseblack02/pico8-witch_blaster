@@ -91,10 +91,11 @@ function _init()
 			--bullet
 			if btnp(5) then
 				if (self.double) make_bullet_obj(self.x,self.y-4,self.shot_speed+self.shot_speed_mod,{false,true,false,false}) make_bullet_obj(self.x,self.y+4,self.shot_speed+self.shot_speed_mod,{false,true,false,false}) else make_bullet_obj(self.x,self.y,self.shot_speed+self.shot_speed_mod,{false,true,false,false})
+				sfx(2)
 			end
 
 			--blast
-			if (btnp(4) and self.e_level==116) self.blast=true explosion(blast_particle,self.x+2,self.y-10)
+			if (btnp(4) and self.e_level==116) self.blast=true explosion(blast_particle,self.x+2,self.y-10) sfx(3)
 
 			if (self.blast) self.e_level-=2 make_bullet_obj(self.x,self.y,6,{false,true,false,false})
 
@@ -108,6 +109,7 @@ function _init()
 				make_bullet_obj(self.x,self.y,self.shot_speed+self.shot_speed_mod,{false,false,true,true})
 				make_bullet_obj(self.x,self.y,self.shot_speed+self.shot_speed_mod,{true,false,false,true})
 				self.burst=false
+				sfx(2)
 			end
 
 			--limit e level
@@ -143,9 +145,6 @@ function _init()
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,12,self.x-8,self.y-8,2,2)
-
-			--hit box
-			circ(self.x,self.y,self.width/2,8)
 		end,
 		check_collision=function(self)
 			--enemy collision
@@ -157,6 +156,7 @@ function _init()
 					self.is_hit=true
 					self.hit_timer+=60
 					explosion(hit_particle,self.x-2,self.y-10)
+					sfx(1)
 
 					--take damage
 					self.hp-=1
@@ -385,6 +385,7 @@ function make_enemy_obj(name,x,y,props)
 				if circles_overlapping(self,bullet) then
 					--take damage
 					self.hp-=player.dmg
+					sfx(0)
 
 					--hit effect
 					explosion(hit_particle,self.x-6,self.y-10)
@@ -436,8 +437,6 @@ function make_worm(x,y)
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-8,self.y-2,2,1)
 
-			--hitbox
-			circ(self.x,self.y,self.width/2,14)
 		end
 	})
 end
@@ -465,9 +464,6 @@ function make_owl(x,y)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-8,self.y-8,2,2)
-				
-			--hitbox
-			circ(self.x,self.y,self.width/2,14)
 		end
 	})
 end
@@ -495,9 +491,6 @@ function make_snail(x,y)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-8,self.y-2,2,1)
-
-			--hitbox
-			circ(self.x,self.y,self.width/2,14)
 		end
 	})
 end
@@ -530,9 +523,6 @@ function make_gull(x,y)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-8,self.y-2,2,1)
-
-			--hitbox
-			circ(self.x,self.y,self.width/2,14)
 		end
 	})
 end
@@ -560,9 +550,6 @@ function make_fly(x,y)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-2,self.y-2,1,1)
-
-			--hitbox
-			circ(self.x,self.y,self.width/2,14)
 		end
 	})
 end
@@ -583,9 +570,6 @@ function make_chicken(x,y)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-4,self.y-4,1,1)
-
-			--hitbox
-			circ(self.x,self.y,self.width/2,14)
 		end
 	})
 end
@@ -649,6 +633,8 @@ function make_health(x,y)
 				--add hp
 				player.hp+=1
 
+				sfx(4)
+
 				--delete self
 				del(pickup_objs,self)
 			end
@@ -673,6 +659,8 @@ function make_life(x,y)
 				--limit lives
 				player.lives=mid(0,player.lives,99)
 
+				sfx(4)
+
 				--delete self
 				del(pickup_objs,self)
 			end
@@ -696,6 +684,8 @@ function make_coin(x,y)
 
 				--limit coins
 				player.coins=mid(0,player.coins,99)
+
+				sfx(4)
 
 				--delete self
 				del(pickup_objs,self)
@@ -725,6 +715,8 @@ function make_powerup(x,y)
 				if (rand==2) player.powerup="double shot"
 				if (rand==3) player.burst=true
 
+				sfx(4)
+
 				--delete self
 				del(pickup_objs,self)
 			end
@@ -746,6 +738,8 @@ function make_estrogen(x,y)
 			if circles_overlapping(self,player) then
 				--add e
 				player.e_level+=12
+
+				sfx(4)
 
 				--delete self
 				del(pickup_objs,self)
@@ -1036,3 +1030,9 @@ __map__
 3300000034000000000000000034000034000000000033000000330000000000000000340000000034003400000000000000003300000033330000343300000034000000000000000034000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0000000000000034000000003300000000003400000000003300000033003400000000000033000000000000000000000000000034000000003300000000000000000034000000003300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0033000034000000000034000000000000000000003300000000000000000000000033000000000000000000330033000000340000000000000000000033000034000000000034000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+__sfx__
+0303000024053240531a6501b6501d6502065022650266502a6502d65028000126001160011600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+030300001205315450174501545022650206501e6501c6501b6501a65019650186501765000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+130300002305322550205501c5501a550165501355500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+1b0300002f5532f550256501e6501a65018650156501465014650146501565017650196501a6501a6501a650196501765016650186501a6501b65017650156501665019650196501865018650186501a65019655
+000300000f050160501d0502505000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
