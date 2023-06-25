@@ -141,7 +141,12 @@ function _init()
 
 	--make enemies temp
 	make_worm(150,98)
+	make_snail(160,104)
 	make_owl(150,42)
+	make_gull(170,64)
+	make_fly(170,72)
+	make_fly(170,67)
+	make_chicken(170,67)
 
 	--make pickups temp
 	make_health(64,64)
@@ -416,7 +421,7 @@ function make_owl(x,y)
 		width=16,
 		hp=8,
 		sprite=42,
-		points=200,
+		points=250,
 		update=function(self)
 			self.x-=0.5
 
@@ -435,6 +440,124 @@ function make_owl(x,y)
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-8,self.y-8,2,2)
 				
+			--hitbox
+			circ(self.x,self.y,self.width/2,14)
+		end
+	})
+end
+
+function make_snail(x,y)
+	return make_enemy_obj("snail",x,y,{
+		width=12,
+		hp=10,
+		sprite=46,
+		points=200,
+		update=function(self)
+			self.x-=0.1
+
+			self:check_collision(self)
+
+			--animate sprite
+			if frame>30 then
+				self.sprite=62
+			else
+				self.sprite=46
+			end
+
+			--delete self if off screen
+			if (self.x<(player.x-128)) del(enemy_objs,self)
+		end,
+		draw=function(self)
+			outlined_sprites(self.sprite,8,self.x-8,self.y-2,2,1)
+
+			--hitbox
+			circ(self.x,self.y,self.width/2,14)
+		end
+	})
+end
+
+function make_gull(x,y)
+	return make_enemy_obj("gull",x,y,{
+		width=12,
+		hp=5,
+		sprite=12,
+		points=150,
+		angle=0,
+		update=function(self)
+			self.x-=0.5
+
+			--move up and down in sin wave
+			self.y+=sin(self.angle)*2
+     		self.angle+=0.015
+
+			self:check_collision(self)
+
+			--animate sprite
+			if frame>30 then
+				self.sprite=28
+			else
+				self.sprite=12
+			end
+
+			--delete self if off screen
+			if (self.x<(player.x-128)) del(enemy_objs,self)
+		end,
+		draw=function(self)
+			outlined_sprites(self.sprite,8,self.x-8,self.y-2,2,1)
+
+			--hitbox
+			circ(self.x,self.y,self.width/2,14)
+		end
+	})
+end
+
+function make_fly(x,y)
+	return make_enemy_obj("fly",x,y,{
+		width=8,
+		hp=3,
+		sprite=11,
+		points=50,
+		update=function(self)
+			self.x-=0.4
+
+			self:check_collision(self)
+
+			--animate sprite
+			if frame>30 then
+				self.sprite=27
+			else
+				self.sprite=11
+			end
+
+			--delete self if off screen
+			if (self.x<(player.x-128)) del(enemy_objs,self)
+		end,
+		draw=function(self)
+			outlined_sprites(self.sprite,8,self.x-2,self.y-2,1,1)
+
+			--hitbox
+			circ(self.x,self.y,self.width/2,14)
+		end
+	})
+end
+
+function make_chicken(x,y)
+	return make_enemy_obj("chicken",x,y,{
+		width=8,
+		hp=3,
+		sprite=10,
+		points=50,
+		update=function(self)
+			self.x-=0.2
+
+			self:check_collision(self)
+
+			--delete self if off screen
+			if (self.x<(player.x-128)) del(enemy_objs,self)
+		end,
+		draw=function(self)
+			outlined_sprites(self.sprite,8,self.x-4,self.y-4,1,1)
+
 			--hitbox
 			circ(self.x,self.y,self.width/2,14)
 		end
@@ -749,7 +872,7 @@ __gfx__
 188888811888888119aa9aa10002444444200000002444200002444444442000b3000000bbbbbb300000000000000000000112444ff110001113333244442211
 118888111118811119aaaaa10002444442000000002444200000244444420000bb300000bbbbbb30011111111111000001112444ff1100000011333322222331
 0118811000188100119999110002444442000000002444200000244444420000bb300000b3bbbbb3114444444441111111444444444111110001133333333331
-0011110000111100011111100002444442000000002444200000244444420000bbb330003b3bbbb31f0044444444fff11f0044444444fff10000111111111111
+0011110000111100011111100002444442000000002444200000244444420000bbb330003b3bbbb31f1144444444fff11f1144444444fff10000111111111111
 11111111001111100111000033333333333333330000333300000000003bbbbbbbbbbbbb330000001f2f444444f4f1111f2f44444444f1110111111011111000
 1dd11dd10118881101c1110033b333333b33b3330003bbbb00000000003bbbbbbbbbbbbbbb3000001fff424444ff11001fff4444444f11000133331114441100
 1dddddd101811181011cc1103b3b333333b3b333033bbbbb0000000003bbbbbbbbbbbbbbbbb3000019f4424444ff100019f44444441110000131331444444111
