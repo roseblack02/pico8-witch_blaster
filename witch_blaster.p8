@@ -829,7 +829,7 @@ end
 function load_wave(wave)
 	--check if there are any specified enemies for the chosen wave
 	if wave.flies then
-		for fly in all(level1.wave1.flies) do
+		for fly in all(wave.flies) do
 			make_fly(fly[1],fly[2])
 		end
 	end
