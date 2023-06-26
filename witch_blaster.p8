@@ -9,13 +9,13 @@ function _init()
 	map_speed,front_speed,back_speed=0.35,0.6,0.4
 	game_pal="trans"
 	blast_text=7
-	level=1
-	wave1,wave2,wave3=true,false,false
-	level_timer=0
 
 	--get level info from text file
 	#include levels.txt
 	levels={level1,level2,level3,level4,level5}
+	level=1
+	level_timer=0
+	wave1,wave2,wave3=true,false,false
 
 	--particle effects
 	blast_particle={}
