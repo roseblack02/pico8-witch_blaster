@@ -16,6 +16,7 @@ function _init()
 	level=1
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
+	level_clear=false
 
 	--particle effects
 	blast_particle={}
@@ -265,7 +266,7 @@ function update_game()
 	elseif level_timer>45 and #enemy_objs<1 then
 		level_timer=0
 		wave1=true
-		state="shop"
+		level_clear=true
 	end 
 
 	--flash text
@@ -348,6 +349,9 @@ function draw_game()
 
 	--blast prompt
 	if (player.e_level==116) outlined_text("blast 🅾️",48,112,blast_text,1)
+
+	--level clear screen
+	outlined_text("level cleared!",38,15,7,1)
 
 	--debug info
 	print("mx:"..mouse_x,0,100,8)
