@@ -299,8 +299,7 @@ function update_game()
 		--end level based on timer and on if there are no enemies
 		elseif level_timer>45 and #enemy_objs<1 then
 			level_clear=true
-			level_timer=0 
-			wave1=true
+			level_timer=0
 		end 
 	end
 
@@ -417,7 +416,7 @@ function update_shop()
 		if(cursor.y==74) buying=false close=true sfx(5)
 	end
 
-	if (close and btnp(5)) close=false open=true state="game" level+=1
+	if (close and btnp(5)) close=false open=true state="game" level+=1 wave1=true
 
 	if (btnp(2)) cursor.y-=8
 	if (btnp(3)) cursor.y+=8
