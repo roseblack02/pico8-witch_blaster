@@ -4,7 +4,7 @@ __lua__
 --main tab
 function _init()
 	state="game"
-	game_pal="normal"
+	game_pal="trans"
 	frame=0
 
 	--game
@@ -386,12 +386,12 @@ function draw_game()
 
 	--level clear screen
 	if level_clear then
-		waving_text("level cleared!",33,15,7,1)
-		rectfill(35,27,92,49,1)
-		rectfill(36,28,91,48,14)
-		outlined_text("score : ",40,31,7,1)
-		outlined_text(player.points,72,31,12,1)
-		outlined_text("continue 🅾️",42,41,blast_text,1)
+		waving_text("level cleared!",33,40,7,1)
+		rectfill(35,52,92,74,1)
+		rectfill(36,53,91,73,14)
+		outlined_text("score : ",40,56,7,1)
+		outlined_text(player.points,72,56,12,1)
+		outlined_text("continue 🅾️",42,66,blast_text,1)
 	end
 end
 
@@ -405,18 +405,18 @@ function update_shop()
 		
 	end
 
-	if (open and btnp(5)) open=false buying=true
+	if (open and btnp(5)) open=false buying=true sfx(5)
 
 	if buying and btnp(4) then	
 		if(cursor.y==34 and player.coins>9 and hp_upgrades<3) player.coins-=10 player.max_hp+=1 player.hp=player.max_hp hp_upgrades+=1 sfx(6)
 		if(cursor.y==42 and player.coins>12 and dmg_upgrades<3) player.coins-=13 player.dmg+=0.5 dmg_upgrades+=1 sfx(6)
 		if(cursor.y==50 and player.coins>17) player.coins-=18 player.lives+=1 sfx(6)
-		if(cursor.y==58 and player.coins>15 and blast_upgrades<5) player.coins-=16 player.blast_dur-=0.2 blast_upgrades+=1 sfx(6)
-		if(cursor.y==66 and player.coins>15 and magic_upgrades<5) player.coins-=16 player.mag_gained+=2 magic_upgrades+=1 sfx(6)
+		if(cursor.y==58 and player.coins>14 and blast_upgrades<5) player.coins-=15 player.blast_dur-=0.2 blast_upgrades+=1 sfx(6)
+		if(cursor.y==66 and player.coins>14 and magic_upgrades<5) player.coins-=15 player.mag_gained+=2 magic_upgrades+=1 sfx(6)
 		if(cursor.y==74) buying=false close=true sfx(5)
 	end
 
-	if (close and btnp(5)) close=false open=true state="game" level+=1 wave1=true
+	if (close and btnp(5)) close=false open=true state="game" level+=1 wave1=true sfx(5)
 
 	if (btnp(2)) cursor.y-=8
 	if (btnp(3)) cursor.y+=8
@@ -475,8 +475,8 @@ function draw_shop()
 		print("hp $10",10,34,1)
 		print("dmg $13",10,42,1)
 		print("lives $18",10,50,1)
-		print("blast $16",10,58,1)
-		print("magic $16",10,66,1)
+		print("blast $15",10,58,1)
+		print("magic $15",10,66,1)
 		print("leave",10,74,1)
 		spr(cursor.sprite,cursor.x,cursor.y)
 
@@ -1320,5 +1320,5 @@ __sfx__
 130300002305322550205501c5501a550165501355500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 1b0300002f5532f550256501e6501a65018650156501465014650146501565017650196501a6501a6501a650196501765016650186501a6501b65017650156501665019650196501865018650186501a65019655
 000300000f050160501d0502505000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-110a00002575326753287532775328753257532475326753007000070000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-010500000f45315450194500040022453284503145000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+01030000255532a5502b5500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+110500000f55015550195500050022550285502e55000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
