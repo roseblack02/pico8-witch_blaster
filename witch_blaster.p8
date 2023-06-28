@@ -7,7 +7,7 @@ function _init()
 	frame=0
 	map_x,front_tree_x,back_tree_x=0,0,0
 	map_speed,front_speed,back_speed=0.35,0.6,0.4
-	game_pal="trans"
+	game_pal="normal"
 	blast_text=7
 	text_wave=0
 
@@ -249,26 +249,28 @@ function update_game()
 	level_timer+=(1/60)
 
 	--load wave based on timer
-	if level_timer<15 and wave1 then
-		--spawn
-		load_wave(levels[level].wave1)
-		--end spawn
-		wave1=false
-		--start next wave
-		wave2=true
-	elseif level_timer>15 and level_timer<30 and wave2 then
-		load_wave(levels[level].wave2)
-		wave2=false
-		wave3=true
-	elseif level_timer>30 and level_timer<45 and wave3 then
-		load_wave(levels[level].wave3)
-		wave3=false
-	--end level based on timer and on if there are no enemies
-	elseif level_timer>45 and #enemy_objs<1 then
-		level_timer=0
-		wave1=true
-		level_clear=true
-	end 
+	if not level_clear then
+		if level_timer<15 and wave1 then
+			--spawn
+			load_wave(levels[level].wave1)
+			--end spawn
+			wave1=false
+			--start next wave
+			wave2=true
+		elseif level_timer>15 and level_timer<30 and wave2 then
+			load_wave(levels[level].wave2)
+			wave2=false
+			wave3=true
+		elseif level_timer>30 and level_timer<45 and wave3 then
+			load_wave(levels[level].wave3)
+			wave3=false
+		--end level based on timer and on if there are no enemies
+		elseif level_timer>45 and #enemy_objs<1 then
+			level_timer=0
+			wave1=true
+			level_clear=true
+		end 
+	end
 
 	--wave text counter
 	if (text_wave>59) text_wave=0
@@ -353,11 +355,17 @@ function draw_game()
 	rectfill(9,121,9+(player.e_level),124,12)
 
 	--blast prompt
-	--if level_cleared then
 	if (player.e_level==116) outlined_text("blast 🅾️",48,112,blast_text,1)
 
 	--level clear screen
-	waving_text("level cleared!",37,15,7,1)
+	if level_clear then
+		waving_text("level cleared!",33,15,7,1)
+		rectfill(35,27,92,49,1)
+		rectfill(36,28,91,48,14)
+		outlined_text("score : ",40,31,7,1)
+		outlined_text(player.points,72,31,12,1)
+		outlined_text("continue ❎",42,41,blast_text,1)
+	end
 
 	--debug info
 	print("mx:"..mouse_x,0,100,8)
