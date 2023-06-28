@@ -261,7 +261,8 @@ function update_game()
 	elseif level_timer>30 and level_timer<45 and wave3 then
 		load_wave(levels[level].wave3)
 		wave3=false
-	elseif level_timer>45 then
+	--end level based on timer and on if there are no enemies
+	elseif level_timer>45 and #enemy_objs<1 then
 		level_timer=0
 		wave1=true
 		state="shop"
