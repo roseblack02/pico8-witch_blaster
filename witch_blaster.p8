@@ -348,6 +348,7 @@ function draw_game()
 	rectfill(9,121,9+(player.e_level),124,12)
 
 	--blast prompt
+	--if level_cleared then
 	if (player.e_level==116) outlined_text("blast 🅾️",48,112,blast_text,1)
 
 	--level clear screen
