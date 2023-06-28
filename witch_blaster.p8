@@ -4,7 +4,7 @@ __lua__
 --main tab
 function _init()
 	state="game"
-	game_pal="trans"
+	game_pal="normal"
 	frame=0
 
 	--game
