@@ -417,11 +417,11 @@ function make_enemy_obj(name,x,y,props)
 						--randomly drop a pickup
 						local rand=flr(rnd(15))+1
 
-						if (rand==1) make_estrogen(self.x,self.y)
+						if (rand==1) make_powerup(self.x,self.y)
 						if (rand==2) make_health(self.x,self.y)
 						if (rand==3) make_life(self.x,self.y)
-						if (rand==4) make_powerup(self.x,self.y)
-						if (rand>4) make_coin(self.x,self.y)
+						if (rand>4 and rand<7) make_estrogen(self.x,self.y)
+						if (rand>6) make_coin(self.x,self.y)
 
 						--give player estrogen
 						player.e_level+=3
