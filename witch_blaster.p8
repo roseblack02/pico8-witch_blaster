@@ -408,11 +408,11 @@ function update_shop()
 	if (open and btnp(5)) open=false buying=true
 
 	if buying and btnp(4) then	
-		if(cursor.y==34 and player.coins>6 and hp_upgrades<3) player.coins-=3 player.max_hp+=1 player.hp=player.max_hp hp_upgrades+=1 sfx(6)
-		if(cursor.y==42 and player.coins>6 and dmg_upgrades<3) player.coins-=5 player.dmg+=0.5 dmg_upgrades+=1 sfx(6)
-		if(cursor.y==50 and player.coins>14) player.coins-=5 player.lives+=1 sfx(6)
-		if(cursor.y==58 and player.coins>9 and blast_upgrades<5) player.coins-=7 player.blast_dur-=0.2 blast_upgrades+=1 sfx(6)
-		if(cursor.y==66 and player.coins>9 and magic_upgrades<5) player.coins-=7 player.mag_gained+=2 magic_upgrades+=1 sfx(6)
+		if(cursor.y==34 and player.coins>9 and hp_upgrades<3) player.coins-=10 player.max_hp+=1 player.hp=player.max_hp hp_upgrades+=1 sfx(6)
+		if(cursor.y==42 and player.coins>12 and dmg_upgrades<3) player.coins-=13 player.dmg+=0.5 dmg_upgrades+=1 sfx(6)
+		if(cursor.y==50 and player.coins>17) player.coins-=18 player.lives+=1 sfx(6)
+		if(cursor.y==58 and player.coins>14 and blast_upgrades<5) player.coins-=15 player.blast_dur-=0.2 blast_upgrades+=1 sfx(6)
+		if(cursor.y==66 and player.coins>14 and magic_upgrades<5) player.coins-=15 player.mag_gained+=2 magic_upgrades+=1 sfx(6)
 		if(cursor.y==74) buying=false close=true sfx(5)
 	end
 
@@ -472,11 +472,11 @@ function draw_shop()
 	end
 
 	if buying then
-		print("hp $7",10,34,1)
-		print("dmg $7",10,42,1)
-		print("lives $15",10,50,1)
-		print("blast $10",10,58,1)
-		print("magic $10",10,66,1)
+		print("hp $10",10,34,1)
+		print("dmg $13",10,42,1)
+		print("lives $18",10,50,1)
+		print("blast $15",10,58,1)
+		print("magic $15",10,66,1)
 		print("leave",10,74,1)
 		spr(cursor.sprite,cursor.x,cursor.y)
 
@@ -567,7 +567,7 @@ function make_enemy_obj(name,x,y,props)
 						del(enemy_objs,self) 
 						player.points+=self.points
 						--randomly drop a pickup
-						local rand=flr(rnd(15))+1
+						local rand=flr(rnd(11))+1
 
 						if (rand==1) make_powerup(self.x,self.y)
 						if (rand==2) make_health(self.x,self.y)
@@ -629,6 +629,7 @@ function make_owl(x,y)
 		hp=8,
 		sprite=42,
 		points=250,
+		shoot_timer=0,
 		update=function(self)
 			self.x-=0.5
 
@@ -799,7 +800,7 @@ function make_bullet_obj(x,y,speed,direction)
 			if (direction[4]) self.x-=speed
 
 			--delete self if off screen
-			if (self.x>(player.x+128) or self.x<player.x-128 or self.y>(player.y+128) or self.y<player.y-128) del(bullet_objs,self)
+			if (self.x>(player.x+120) or self.x<player.x-120 or self.y>(player.y+120) or self.y<player.y-120) del(bullet_objs,self)
 		end,
 		draw=function(self)
 			circfill(self.x,self.y,self.width/2,12)
