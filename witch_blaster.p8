@@ -103,8 +103,17 @@ function _init()
 				sfx(2)
 			end
 
-			--blast
-			if (btnp(4) and self.e_level==116) self.blast=true explosion(blast_particle,self.x+2,self.y-10) sfx(3)
+			if btnp(4) then
+				if level_clear then
+					--end level
+					state="shop"
+					level_clear=false
+					self.points=0
+				else
+					--blast
+					if (self.e_level==116) self.blast=true explosion(blast_particle,self.x+2,self.y-10) sfx(3)
+				end
+			end
 
 			if (self.blast) self.e_level-=2 make_bullet_obj(self.x,self.y,6,{false,true,false,false})
 
@@ -364,7 +373,7 @@ function draw_game()
 		rectfill(36,28,91,48,14)
 		outlined_text("score : ",40,31,7,1)
 		outlined_text(player.points,72,31,12,1)
-		outlined_text("continue ❎",42,41,blast_text,1)
+		outlined_text("continue 🅾️",42,41,blast_text,1)
 	end
 
 	--debug info
