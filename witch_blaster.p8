@@ -9,6 +9,7 @@ function _init()
 	map_speed,front_speed,back_speed=0.35,0.6,0.4
 	game_pal="trans"
 	blast_text=7
+	text_wave=0
 
 	--get level info from text file
 	#include levels.txt
@@ -269,6 +270,10 @@ function update_game()
 		level_clear=true
 	end 
 
+	--wave text counter
+	if (text_wave>59) text_wave=0
+	text_wave+=1
+
 	--flash text
 	if frame>30 then
 		blast_text=7
@@ -352,7 +357,7 @@ function draw_game()
 	if (player.e_level==116) outlined_text("blast 🅾️",48,112,blast_text,1)
 
 	--level clear screen
-	outlined_text("level cleared!",38,15,7,1)
+	waving_text("level cleared!",37,15,7,1)
 
 	--debug info
 	print("mx:"..mouse_x,0,100,8)
@@ -913,6 +918,13 @@ function outlined_text(text,x,y,colour,outline)
 
 	--text
 	print(text,x,y,colour)
+end
+
+--waving text with outline
+function waving_text(text,x,y,colour,outline)
+	for i=0,#text,1 do
+	  	outlined_text(sub(text,i,i),x+(i*4),y+sin((text_wave+i)/60)*5,colour,outline)
+	end
 end
 
 --create explosion particles
