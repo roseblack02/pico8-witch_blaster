@@ -422,6 +422,9 @@ function make_enemy_obj(name,x,y,props)
 						if (rand==3) make_life(self.x,self.y)
 						if (rand==4) make_powerup(self.x,self.y)
 						if (rand>4) make_coin(self.x,self.y)
+
+						--give player estrogen
+						player.e_level+=3
 					end
 				else
 					self.is_hit=false
