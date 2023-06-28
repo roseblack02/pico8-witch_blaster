@@ -1,8 +1,8 @@
 --multidimensional array of coords for levels
 --level > wave > enemy type (flies,gulls,owls,worms,snails,chickens) > coords
 level1={wave1={flies={{200,24},{200,44},{200,64},{200,84}},
-				gulls={{310,48},{310,80}}},
-		wave2={flies={{230,24},{230,34},{230,44},{230,54},{230,64},{230,74},{230,84}},
+				gulls={{430,38},{430,70},{430,102}}},
+		wave2={flies={{270,24},{270,34},{270,44},{270,54},{270,64},{270,74},{270,84}},
 				worms={{170,98},{175,108},{180,118}},
 				snails={{190,98},{195,108},{200,118}}},
 		wave3={}}
