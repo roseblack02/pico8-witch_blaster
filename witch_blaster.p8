@@ -3,13 +3,18 @@ version 36
 __lua__
 --main tab
 function _init()
-	state="game"
+	state="shop"
+	game_pal="normal"
 	frame=0
+
+	--game
 	map_x,front_tree_x,back_tree_x=0,0,0
 	map_speed,front_speed,back_speed=0.35,0.6,0.4
-	game_pal="normal"
 	blast_text=7
 	text_wave=0
+
+	--store
+	blink_timer=0
 
 	--get level info from text file
 	#include levels.txt
@@ -201,6 +206,10 @@ function _update60()
 	--count frames
 	frame+=1
 	if (frame>60) frame=0
+
+	--mouse temp
+	mouse_x=stat(32)
+	mouse_y=stat(33)
 end
 
 function _draw()
@@ -213,6 +222,14 @@ function _draw()
 	elseif state=="end" then
 		draw_end()
 	end
+
+	--debug info
+	print("mx:"..mouse_x,0,113,8)
+	print("my:"..mouse_y,0,121,8)
+	pset(mouse_x,mouse_y,8)
+
+	print("px:"..flr(player.x),25,113,2)
+	print("py:"..flr(player.y),25,121,2)
 end
 
 --game states
@@ -291,10 +308,6 @@ function update_game()
 	else
 		blast_text=12
 	end
-
-	--mouse temp
-	mouse_x=stat(32)
-	mouse_y=stat(33)
 end
 
 function draw_game()
@@ -375,22 +388,27 @@ function draw_game()
 		outlined_text(player.points,72,31,12,1)
 		outlined_text("continue 🅾️",42,41,blast_text,1)
 	end
-
-	--debug info
-	print("mx:"..mouse_x,0,100,8)
-	print("my:"..mouse_y,0,108,8)
-	pset(mouse_x,mouse_y,8)
-
-	print("px:"..flr(player.x),25,100,2)
-	print("py:"..flr(player.y),25,108,2)
 end
 
 function update_shop()
-
+	--blink timer
+	if (blink_timer>30) blink_timer=0
+	blink_timer+=1/60
 end
 
 function draw_shop()
+	cls(12)
 
+	--background
+	back_trees(back_tree_x)
+	front_trees(front_tree_x)
+	rectfill(0,96,128,128,3)
+	map(map_x,0)
+
+	--blahaj
+	sspr(40,32,24,32,64,24,48,64)
+	--blink
+	if (blink_timer>29.5) sspr(64,32,8,8,80,40,16,16)
 end
 
 function update_end()
@@ -1106,8 +1124,8 @@ __gfx__
 0011ffffffffffffff1100001fffffffffffffff00117777cccccccccc100000e777cccc00000000001111eeee1f100000000000000000000000000000000000
 001fffffffffffffff210000001fffffffffffff001777777ccc4ccccc110000000000000000000000011eeeefff100000000000000000000000000000000000
 011fffffffffffffff211000011fffffffffffff0017777777c474ccccc1000000000000000000000001eeccccc1100000000000000000000000000000000000
-01ff1ffffffffff1ff22100001ffffffffffffff0017777777c404ccccc10000000000000000000000011ceeeec1100000000000000000000000000000000000
-01fff1ffffffff1fff22100001ff1ffffffffff101177777777404ccccc10000000000000000000000011eeeeeec100000000000000000000000000000000000
+01ff1ffffffffff1ff22100001ffffffffffffff0017777777c414ccccc10000000000000000000000011ceeeec1100000000000000000000000000000000000
+01fff1ffffffff1fff22100001ff1ffffffffff101177777777414ccccc10000000000000000000000011eeeeeec100000000000000000000000000000000000
 11fff11ffffff11fff22110011fff1ffffffff1f01777777777c4cccccc1000000000000000000000011eeeeeeee111111111000000000000000000000000000
 1ffff171ffff171fff2221001fffff1ffffff1ff017eeee77777ccccccc100000000000000000000001eeee2eeeeeeff14441000000000000000000000000000
 1ffff17ffffff71fff2221001ffffff1ffff1fff01eeeeee7777ccccccc1100000000000000000000012eeee2eeeeef441111000000000000000000000000000
