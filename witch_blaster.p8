@@ -44,7 +44,7 @@ function _init()
 	player={
 		x=25,
 		y=64,
-		width=10,
+		width=8,
 		velocity_x=0,
 		velocity_y=0,
 		hp=3,
@@ -409,7 +409,7 @@ function update_shop()
 
 	if buying and btnp(4) then	
 		if(cursor.y==34 and player.coins>6 and hp_upgrades<3) player.coins-=3 player.max_hp+=1 player.hp=player.max_hp hp_upgrades+=1 sfx(6)
-		if(cursor.y==42 and player.coins>6 and dmg_upgrades<3) player.coins-=5 player.dmg+=1 dmg_upgrades+=1 sfx(6)
+		if(cursor.y==42 and player.coins>6 and dmg_upgrades<3) player.coins-=5 player.dmg+=0.5 dmg_upgrades+=1 sfx(6)
 		if(cursor.y==50 and player.coins>14) player.coins-=5 player.lives+=1 sfx(6)
 		if(cursor.y==58 and player.coins>9 and blast_upgrades<5) player.coins-=7 player.blast_dur-=0.2 blast_upgrades+=1 sfx(6)
 		if(cursor.y==66 and player.coins>9 and magic_upgrades<5) player.coins-=7 player.mag_gained+=2 magic_upgrades+=1 sfx(6)
@@ -641,6 +641,12 @@ function make_owl(x,y)
 				self.sprite=44
 			end
 
+			--shoot at player
+			self.shoot_timer+=1
+			if (self.shoot_timer>180) self.shoot_timer=0
+
+			if (self.x<(player.x+128) and self.shoot_timer==179) make_enemy_bullet(self.x,self.y)
+
 			--delete self if off screen
 			if (self.x<(player.x-128)) del(enemy_objs,self)
 		end,
@@ -712,9 +718,10 @@ end
 function make_fly(x,y)
 	return make_enemy_obj("fly",x,y,{
 		width=8,
-		hp=3,
+		hp=2,
 		sprite=11,
 		points=50,
+		shoot_timer=0,
 		update=function(self)
 			self.x-=0.4
 
@@ -726,6 +733,12 @@ function make_fly(x,y)
 			else
 				self.sprite=11
 			end
+
+			--shoot at player
+			self.shoot_timer+=1
+			if (self.shoot_timer>150) self.shoot_timer=0
+
+			if (self.x<(player.x+128) and self.shoot_timer==149) make_enemy_bullet(self.x,self.y)
 
 			--delete self if off screen
 			if (self.x<(player.x-128)) del(enemy_objs,self)
@@ -752,6 +765,21 @@ function make_chicken(x,y)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-4,self.y-4,1,1)
+		end
+	})
+end
+
+function make_enemy_bullet(x,y)
+	return make_enemy_obj("enemy_bullet",x,y,{
+		width=4,
+		update=function(self)
+			self.x-=0.8
+			--delete self if off screen
+			if (self.x<(player.x-128)) del(enemy_objs,self)
+		end,
+		draw=function(self)
+			circfill(self.x,self.y,self.width/2,8)
+			circfill(self.x,self.y,(self.width/2)-1,7)
 		end
 	})
 end
