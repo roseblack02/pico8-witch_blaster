@@ -568,13 +568,12 @@ function make_enemy_obj(name,x,y,props)
 						del(enemy_objs,self) 
 						player.points+=self.points
 						--randomly drop a pickup
-						local rand=flr(rnd(11))+1
+						local rand=flr(rnd(9))+1
 
 						if (rand==1) make_powerup(self.x,self.y)
 						if (rand==2) make_health(self.x,self.y)
-						if (rand==3) make_life(self.x,self.y)
-						if (rand>3 and rand<7) make_magic(self.x,self.y)
-						if (rand>6) make_coin(self.x,self.y)
+						if (rand>2 and rand<4) make_magic(self.x,self.y)
+						if (rand>3) make_coin(self.x,self.y)
 
 						--give player magic
 						player.mag_level+=player.mag_gained
@@ -858,34 +857,6 @@ function make_health(x,y)
 		end,
 		draw=function(self)
 			outlined_sprites(33,12,self.x-4,self.y-4,1,1)
-		end
-	})
-end
-
-function make_life(x,y)
-	return make_pickup_obj("life",x,y,{
-		update=function(self)
-			self.x-=0.25
-
-			--player pickup
-			if circles_overlapping(self,player) then
-				--add lives
-				player.lives+=1
-
-				--limit lives
-				player.lives=mid(0,player.lives,99)
-
-				sfx(4)
-
-				--delete self
-				del(pickup_objs,self)
-			end
-
-			--delete self if off screen
-			if (self.x<(player.x-128)) del(pickup_objs,self)
-		end,
-		draw=function(self)
-			outlined_sprites(50,12,self.x-4,self.y-4,1,1)
 		end
 	})
 end
