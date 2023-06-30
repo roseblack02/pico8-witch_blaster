@@ -439,7 +439,7 @@ function draw_game()
 	end
 
 	--tutorial text
-	if level==1 then
+	if level==1 and not level_clear then
 		if(level_timer<10) outlined_text("⬇️⬆️⬅️➡️ to move",32,12,7,1) outlined_text("❎/x to shoot",38,20,7,1)
 		if(level_timer>10 and level_timer<20) outlined_text("🅾️/z to blast",38,12,7,1) outlined_text("when magic bar is full",20,20,7,1)
 	end
