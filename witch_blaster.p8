@@ -255,6 +255,20 @@ function update_menu()
 	if(btnp(3)) option+=1
 	option=mid(1,option,3)
 
+	if (option==1 and btnp(5)) state="game" 
+
+	if option==2 then
+		if btnp(1) or btnp(0) then
+			if(music_on=="on") music_on="off" else music_on="on"
+		end
+	end
+
+	if option==3 then
+		if btnp(1) or btnp(0) then
+			if(game_pal=="normal") game_pal="trans" else game_pal="normal"
+		end
+	end
+
 	--flash button prompts
 	if(frame>30) text_flash=7 else text_flash=12
 
