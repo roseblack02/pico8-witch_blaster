@@ -1119,7 +1119,7 @@ function outlined_sprites(sprite,colour,x,y,width,height,flip_x,flip_y)
 	pal()
 
 	if game_pal=="trans" then
-		pal({-15,-14,2,-3,-4,6,7,-8,12,14,-3,12,13,14,6},1)
+		pal({-15,-14,2,-3,-4,6,7,-8,13,14,-3,12,13,14,6},1)
 	else
 		pal({1,2,3,4,5,6,7,8,9,10,-5},1)
 	end
