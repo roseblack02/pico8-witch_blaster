@@ -36,6 +36,9 @@ function _init()
 	menu_colour={7,7,7}
 	text_flash=7
 
+	--intro
+	intro_x,intro_y=32,54
+
 	--game
 	map_x,front_tree_x,back_tree_x=0,0,0
 	map_speed,front_speed,back_speed=0.35,0.6,0.4
@@ -230,6 +233,8 @@ end
 function _update60()
 	if state=="menu" then
 		update_menu()
+	elseif state=="intro" then
+		update_intro()
 	elseif state=="game" then
 		update_game()
 	elseif state=="shop" then
@@ -250,6 +255,8 @@ end
 function _draw()
 	if state=="menu" then
 		draw_menu()
+	elseif state=="intro" then
+		draw_intro()
 	elseif state=="game" then
 		draw_game()
 	elseif state=="shop" then
@@ -277,7 +284,7 @@ function update_menu()
 	if(btnp(3)) option+=1
 	option=mid(1,option,3)
 
-	if (option==1 and btnp(5)) state="game" 
+	if (option==1 and btnp(5)) state="intro" 
 
 	if option==2 then
 		if btnp(1) or btnp(0) then
@@ -305,10 +312,7 @@ end
 function draw_menu()
 	cls(12)
 	--background
-	back_trees(back_tree_x)
-	front_trees(front_tree_x)
-	rectfill(0,96,128,128,3)
-	map(map_x,0)
+	static_background()
 
 	--title text
 	outlined_sprites(128,12,32,witch_y,9,2)
@@ -327,9 +331,30 @@ function draw_menu()
 	end
 end
 
---prep next level
-function start_game()
+function update_intro()
+	--scroll background
+	map_x+=map_speed
+	if (map_x>60) map_x=0
+	back_tree_x-=back_speed
+	if (back_tree_x<-127) back_tree_x=0
+	front_tree_x-=front_speed
+	if (front_tree_x<-127) front_tree_x=0
 
+	--bob character
+	
+end
+
+function draw_intro()
+	cls(12)
+	--background trees
+	back_trees(back_tree_x)
+	back_trees(back_tree_x+127)
+	front_trees(front_tree_x)
+	front_trees(front_tree_x+127)
+	rectfill(0,96,128,128,3)
+	map(map_x,0)
+
+	sspr(72,32,29,24,intro_x,intro_y,58,48)
 end
 
 function update_game()
@@ -518,10 +543,7 @@ end
 function draw_shop()
 	cls(12)
 	--background
-	back_trees(back_tree_x)
-	front_trees(front_tree_x)
-	rectfill(0,96,128,128,3)
-	map(map_x,0)
+	static_background()
 
 	--blahaj
 	sspr(40,32,24,32,64,24,48,64)
@@ -1268,6 +1290,13 @@ function leaves(x,y,width,colour)
 	circfill(89+x,31+y,7+width,colour)
 	circfill(101+x,15+y,17+width,colour)
 	circfill(121+x,13+y,16+width,colour)
+end
+
+function static_background()
+	back_trees(back_tree_x)
+	front_trees(front_tree_x)
+	rectfill(0,96,128,128,3)
+	map(map_x,0)
 end
 __gfx__
 00000000000000001110000000000000000000000000000077700000000000000000000000000000011111000000000000000000111100000000000000000000
