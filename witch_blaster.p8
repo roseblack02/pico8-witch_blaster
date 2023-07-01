@@ -7,12 +7,14 @@ __lua__
 	Make 5 levels (5th will be boss fight)
 	Make boss enemy (egg)
 	Maybe extra levels and a second final boss (wizard) due to extra time
+	Music
 	Make little ending animation
 	Make intro animation with story text
 	Make animation that moves points from dead enemy to tyhe points at the top
 	Refine tutorial text
 	Refine enemies
 	Refine movement
+	Refine sprites
 	Make shop a little more visually intersting
 ]]--
 
@@ -435,7 +437,8 @@ function draw_game()
 	outlined_text(player.points,64-(#tostr(player.points)*2)-1,2,7,1)
 
 	--powerup
-	outlined_text(player.powerup,64-(#player.powerup*2)-1,12,7,1)
+	--dont show powerup text during tutorial
+	if(not(level==1 and level_timer<20)) outlined_text(player.powerup,64-(#player.powerup*2)-1,12,7,1)
 
 	--lives
 	outlined_text(player.lives,109,2,7,1)
