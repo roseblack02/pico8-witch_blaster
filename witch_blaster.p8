@@ -16,8 +16,6 @@ __lua__
 
 	Make intro animation with story text
 
-	Make animation that moves points from dead enemy to tyhe points at the top
-
 	Refine tutorial text
 	Refine enemies
 	Refine movement
@@ -32,7 +30,7 @@ function _init()
 
 	--menu
 	witch_y,blaster_x=-20,-100
-	game_pal="normal"
+	game_pal="trans"
 	music_on="on"
 	option=1
 	menu_colour={7,7,7}
