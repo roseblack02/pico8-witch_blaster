@@ -2,6 +2,19 @@ pico-8 cartridge // http://www.pico-8.com
 version 36
 __lua__
 --main tab
+
+--[[todo
+	Make 5 levels (5th will be boss fight)
+	Make boss enemy
+	Make little ending animation
+	Make intro animation with story text
+	Make animation that moves points from dead enemy to tyhe points at the top
+	Refine tutorial text
+	Refine enemies
+	Refine movement
+	Make shop a little more visually intersting
+]]--
+
 function _init()
 	state="menu"
 	frame=0
