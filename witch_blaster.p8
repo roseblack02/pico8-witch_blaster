@@ -67,7 +67,7 @@ function _init()
 	player={
 		x=25,
 		y=64,
-		width=8,
+		width=6,
 		velocity_x=0,
 		velocity_y=0,
 		hp=3,
