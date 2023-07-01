@@ -114,10 +114,10 @@ function _init()
 			self.velocity_x*=0.85
 			self.velocity_y*=0.85
 
-			if (btn(0)) self.velocity_x-=1
-			if (btn(1)) self.velocity_x+=1
-			if (btn(2)) self.velocity_y-=1 self.down=true
-			if (btn(3)) self.velocity_y+=1 self.up=true
+			if (btn(0)) self.velocity_x-=0.75
+			if (btn(1)) self.velocity_x+=0.75
+			if (btn(2)) self.velocity_y-=0.75 self.down=true
+			if (btn(3)) self.velocity_y+=0.75 self.up=true
 
 			self.velocity_x=mid(-2,self.velocity_x,2)
 			self.velocity_y=mid(-2,self.velocity_y,2)
