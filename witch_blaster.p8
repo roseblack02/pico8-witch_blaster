@@ -5,7 +5,8 @@ __lua__
 
 --[[todo
 	Make 5 levels (5th will be boss fight)
-	Make boss enemy
+	Make boss enemy (egg)
+	Maybe extra levels and a second final boss (wizard) due to extra time
 	Make little ending animation
 	Make intro animation with story text
 	Make animation that moves points from dead enemy to tyhe points at the top
