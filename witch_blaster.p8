@@ -624,6 +624,7 @@ function make_enemy_obj(name,x,y,props)
 		sprite=0,
 		is_hit=false,
 		points=0,
+		shoot_timer=0,
 		update=function(self)
 		end,
 		draw=function(self)
@@ -663,7 +664,13 @@ function make_enemy_obj(name,x,y,props)
 					self.is_hit=false
 				end
 			end
-			
+		end,
+		shoot_player=function(self)
+			--shoot at player
+			self.shoot_timer+=1
+			if (self.shoot_timer>180) self.shoot_timer=0
+
+			if (self.x<(player.x+200) and self.shoot_timer==179) make_enemy_bullet(self.x,self.y)
 		end
 	}
 	--loop through properties and assign it to the obj table
@@ -710,7 +717,6 @@ function make_owl(x,y)
 		hp=8,
 		sprite=42,
 		points=250,
-		shoot_timer=0,
 		update=function(self)
 			self.x-=0.5
 
@@ -723,11 +729,7 @@ function make_owl(x,y)
 				self.sprite=44
 			end
 
-			--shoot at player
-			self.shoot_timer+=1
-			if (self.shoot_timer>180) self.shoot_timer=0
-
-			if (self.x<(player.x+128) and self.shoot_timer==179) make_enemy_bullet(self.x,self.y)
+			self:shoot_player(self)
 
 			--delete self if off screen
 			if (self.x<(player.x-128)) del(enemy_objs,self)
@@ -803,7 +805,6 @@ function make_fly(x,y)
 		hp=2,
 		sprite=11,
 		points=50,
-		shoot_timer=0,
 		update=function(self)
 			self.x-=0.4
 
@@ -816,14 +817,7 @@ function make_fly(x,y)
 				self.sprite=11
 			end
 
-			--shoot at player
-			self.shoot_timer+=1
-			if (self.shoot_timer>150) self.shoot_timer=0
-
-			if (self.x<(player.x+128) and self.shoot_timer==149) make_enemy_bullet(self.x,self.y)
-
-			--delete self if off screen
-			if (self.x<(player.x-128)) del(enemy_objs,self)
+			self:shoot_player(self)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-2,self.y-2,1,1)
