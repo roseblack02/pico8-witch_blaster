@@ -38,6 +38,7 @@ function _init()
 
 	--intro
 	intro_x,intro_y=32,54
+	intro_angle=0
 
 	--game
 	map_x,front_tree_x,back_tree_x=0,0,0
@@ -341,7 +342,9 @@ function update_intro()
 	if (front_tree_x<-127) front_tree_x=0
 
 	--bob character
-	
+	intro_y+=sin(intro_angle)*1
+	if(intro_angle>10)intro_angle=0
+    intro_angle+=0.01
 end
 
 function draw_intro()
@@ -807,6 +810,7 @@ function make_gull(x,y)
 
 			--move up and down in sin wave
 			self.y+=sin(self.angle)*2
+			if(self.angle>10)self.angle=0
      		self.angle+=0.015
 
 			self:check_collision(self)
