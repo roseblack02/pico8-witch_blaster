@@ -482,7 +482,7 @@ function draw_game()
 	outlined_text(player.coins,109,12,7,1)
 	spr(34,119,11)
 
-	--e level
+	--mag level
 	circfill(4,123,7,7)
 	rectfill(7,119,127,126,7)
 	rectfill(8,120,126,125,13)
