@@ -759,7 +759,7 @@ function make_worm(x,y)
 				self.sprite=14
 			end
 
-			despawn(self)
+			self:despawn(self)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-8,self.y-2,2,1)
@@ -788,7 +788,7 @@ function make_owl(x,y)
 
 			self:shoot_player(self)
 
-			despawn(self)
+			self:despawn(self)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-8,self.y-8,2,2)
@@ -814,7 +814,7 @@ function make_snail(x,y)
 				self.sprite=46
 			end
 
-			despawn(self)
+			self:despawn(self)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-8,self.y-2,2,1)
@@ -846,7 +846,7 @@ function make_gull(x,y)
 				self.sprite=12
 			end
 
-			despawn(self)
+			self:despawn(self)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-8,self.y-2,2,1)
@@ -874,7 +874,7 @@ function make_fly(x,y)
 
 			self:shoot_player(self)
 
-			despawn(self)
+			self:despawn(self)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-2,self.y-2,1,1)
@@ -893,7 +893,7 @@ function make_chicken(x,y)
 
 			self:check_collision(self)
 
-			despawn(self)
+			self:despawn(self)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-4,self.y-4,1,1)
@@ -954,6 +954,10 @@ function make_pickup_obj(name,x,y,props)
 		update=function(self)
 		end,
 		draw=function(self)
+		end,
+		despawn=function(self)
+			--delete self if off screen
+			if (self.x<(player.x-128)) del(pickup_objs,self)
 		end
 	}
 	--loop through properties and assign it to the obj table
@@ -971,6 +975,7 @@ function make_health(x,y)
 	return make_pickup_obj("health",x,y,{
 		update=function(self)
 			self.x-=0.25
+			self:despawn(self)
 
 			--player pickup
 			if circles_overlapping(self,player) then
@@ -982,9 +987,6 @@ function make_health(x,y)
 				--delete self
 				del(pickup_objs,self)
 			end
-
-			--delete self if off screen
-			if (self.x<(player.x-128)) del(pickup_objs,self)
 		end,
 		draw=function(self)
 			outlined_sprites(33,12,self.x-4,self.y-4,1,1)
@@ -996,6 +998,7 @@ function make_coin(x,y)
 	return make_pickup_obj("coin",x,y,{
 		update=function(self)
 			self.x-=0.25
+			self:despawn(self)
 
 			--player pickup
 			if circles_overlapping(self,player) then
@@ -1010,9 +1013,6 @@ function make_coin(x,y)
 				--delete self
 				del(pickup_objs,self)
 			end
-
-			--delete self if off screen
-			if (self.x<(player.x-128)) del(pickup_objs,self)
 		end,
 		draw=function(self)
 			outlined_sprites(34,12,self.x-4,self.y-4,1,1)
@@ -1024,6 +1024,7 @@ function make_powerup(x,y)
 	return make_pickup_obj("powerup",x,y,{
 		update=function(self)
 			self.x-=0.25
+			self:despawn(self)
 
 			--player pickup
 			if circles_overlapping(self,player) then
@@ -1042,9 +1043,6 @@ function make_powerup(x,y)
 				--delete self
 				del(pickup_objs,self)
 			end
-
-			--delete self if off screen
-			if (self.x<(player.x-128)) del(pickup_objs,self)
 		end,
 		draw=function(self)
 			outlined_sprites(49,12,self.x-4,self.y-4,1,1)
@@ -1057,10 +1055,11 @@ function make_magic(x,y)
 	return make_pickup_obj("magic",x,y,{
 		update=function(self)
 			self.x-=0.25
+			self:despawn(self)
 
 			--player pickup
 			if circles_overlapping(self,player) then
-				--add e
+				--add magic
 				player.mag_level+=12
 
 				sfx(4)
@@ -1068,9 +1067,6 @@ function make_magic(x,y)
 				--delete self
 				del(pickup_objs,self)
 			end
-
-			--delete self if off screen
-			if (self.x<(player.x-128)) del(pickup_objs,self)
 		end,
 		draw=function(self)
 			outlined_sprites(16,12,self.x-4,self.y-4,1,1)
