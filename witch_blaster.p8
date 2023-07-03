@@ -472,7 +472,7 @@ function draw_game()
 
 	--powerup
 	--dont show powerup text during tutorial
-	if(not(level==1 and level_timer<20)) outlined_text(player.powerup,64-(#player.powerup*2)-1,12,7,1)
+	if(not(level==1 and level_timer<26)) outlined_text(player.powerup,64-(#player.powerup*2)-1,12,7,1)
 
 	--lives
 	outlined_text(player.lives,109,2,7,1)
@@ -505,8 +505,10 @@ function draw_game()
 
 	--tutorial text
 	if level==1 and not level_clear then
-		if(level_timer<10) outlined_text("⬇️⬆️⬅️➡️ to move",32,12,7,1) outlined_text("❎/x to shoot",38,20,7,1)
-		if(level_timer>10 and level_timer<20) outlined_text("🅾️/z to blast",38,12,7,1) outlined_text("when magic bar is full",20,20,7,1)
+		if(level_timer<7) outlined_text("⬇️⬆️⬅️➡️ to move",32,12,7,1) outlined_text("❎/x to shoot",38,20,7,1)
+		if(level_timer>7 and level_timer<12) outlined_text("enemies and blue orbs",24,12,7,1) outlined_text("fill the magic bar",28,20,7,1)
+		if(level_timer>12 and level_timer<19) outlined_text("🅾️/z to blast",38,12,7,1) outlined_text("when magic bar is full",20,20,7,1)
+		if(level_timer>19 and level_timer<26) outlined_text("enemies also drop",30,12,7,1) outlined_text("coins, powerups and hp",22,20,7,1)
 	end
 end
 
