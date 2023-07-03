@@ -16,7 +16,6 @@ __lua__
 
 	Make intro animation with story text (say somthin like "i need to ice that fool >:(")
 
-	Refine tutorial text
 	Refine enemies
 	Refine movement
 	Refine sprites
