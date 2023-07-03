@@ -4,17 +4,17 @@ __lua__
 --main tab
 
 --[[todo
-	Make 5 levels (5th will be boss fight)
-	Make boss enemy (egg)
+	Make 8 levels (4 and 8 are bosses)
+	Make boss enemies (egg) (wizard)
 	Maybe extra levels and a second final boss (wizard) due to extra time
 
 	Music
 	in update- if(music_on=="on") music(track)
 	track=1,track=2 etc in different states
 
-	Make little ending animation
+	Make little ending animation (say something frickin cool like "get smoked babee B)")
 
-	Make intro animation with story text
+	Make intro animation with story text (say somthin like "i need to ice that fool >:(")
 
 	Refine tutorial text
 	Refine enemies
@@ -25,7 +25,7 @@ __lua__
 ]]--
 
 function _init()
-	state="game"
+	state="menu"
 	frame=0
 
 	--menu
@@ -37,8 +37,9 @@ function _init()
 	text_flash=7
 
 	--intro
-	intro_x,intro_y=32,54
+	intro_x,intro_y=32,64
 	intro_angle=0
+	intro_state,intro_text=1,{{"an dark force lurks in this","forest, sapping the magical","energy from local residents..."},{"i need to track down and smoke","these evil spirits so that i","can complete my transformation!"}}
 
 	--game
 	map_x,front_tree_x,back_tree_x=0,0,0
@@ -151,7 +152,6 @@ function _init()
 					--end level
 					state="shop"
 					level_clear=false
-					self.points=0
 					sfx(5)
 				else
 					--blast
@@ -273,6 +273,9 @@ function _draw()
 
 	print("px:"..flr(player.x),25,113,2)
 	print("py:"..flr(player.y),25,121,2)
+
+	print("lt:"..flr(level_timer),50,113,14)
+	print("ec:"..#enemy_objs,50,121,14)
 end
 
 --game states
@@ -285,7 +288,7 @@ function update_menu()
 	if(btnp(3)) option+=1
 	option=mid(1,option,3)
 
-	if (option==1 and btnp(5)) state="intro" 
+	if (option==1 and btnp(5)) state="intro" sfx(7) intro_state=1
 
 	if option==2 then
 		if btnp(1) or btnp(0) then
@@ -345,6 +348,12 @@ function update_intro()
 	intro_y+=sin(intro_angle)*1
 	if(intro_angle>10)intro_angle=0
     intro_angle+=0.01
+
+    --advance dialogue
+    if(btnp(5)) sfx(7) intro_state+=1
+
+    --start game
+    if(intro_state>2) reset_info()
 end
 
 function draw_intro()
@@ -357,7 +366,19 @@ function draw_intro()
 	rectfill(0,96,128,128,3)
 	map(map_x,0)
 
+	--character
 	sspr(72,32,29,24,intro_x,intro_y,58,48)
+
+	--text bubble
+	rectfill(0,0,128,36,1)
+	outlined_text("◆",40,33,7,1)
+	rectfill(0,0,128,34,7)
+
+	--text
+	for i=1,3 do
+		if(intro_state<3)print(intro_text[intro_state][i],2,-6+(i*8),1)
+	end
+	print("❎",119,28,1)
 end
 
 function update_game()
@@ -532,7 +553,7 @@ function update_shop()
 	end
 
 	--leavinf dialogue
-	if (close and btnp(5)) close=false open=true state="game" level+=1 wave1=true sfx(5)
+	if (close and btnp(5)) close=false open=true level+=1 wave1=true sfx(5) reset_info()
 
 	--move cursor
 	if (btnp(2)) cursor.y-=8
@@ -704,6 +725,10 @@ function make_enemy_obj(name,x,y,props)
 			if (self.shoot_timer>180) self.shoot_timer=0
 
 			if (self.x<(player.x+200) and self.shoot_timer==179) make_enemy_bullet(self.x,self.y)
+		end,
+		despawn=function(self)
+			--delete self if off screen
+			if (self.x<(player.x-128)) del(enemy_objs,self)
 		end
 	}
 	--loop through properties and assign it to the obj table
@@ -734,8 +759,7 @@ function make_worm(x,y)
 				self.sprite=14
 			end
 
-			--delete self if off screen
-			if (self.x<(player.x-128)) del(enemy_objs,self)
+			despawn(self)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-8,self.y-2,2,1)
@@ -764,8 +788,7 @@ function make_owl(x,y)
 
 			self:shoot_player(self)
 
-			--delete self if off screen
-			if (self.x<(player.x-128)) del(enemy_objs,self)
+			despawn(self)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-8,self.y-8,2,2)
@@ -791,8 +814,7 @@ function make_snail(x,y)
 				self.sprite=46
 			end
 
-			--delete self if off screen
-			if (self.x<(player.x-128)) del(enemy_objs,self)
+			despawn(self)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-8,self.y-2,2,1)
@@ -824,8 +846,7 @@ function make_gull(x,y)
 				self.sprite=12
 			end
 
-			--delete self if off screen
-			if (self.x<(player.x-128)) del(enemy_objs,self)
+			despawn(self)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-8,self.y-2,2,1)
@@ -852,6 +873,8 @@ function make_fly(x,y)
 			end
 
 			self:shoot_player(self)
+
+			despawn(self)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-2,self.y-2,1,1)
@@ -870,8 +893,7 @@ function make_chicken(x,y)
 
 			self:check_collision(self)
 
-			--delete self if off screen
-			if (self.x<(player.x-128)) del(enemy_objs,self)
+			despawn(self)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-4,self.y-4,1,1)
@@ -1088,6 +1110,13 @@ function remove(list)
 	for i=1,#list do
 		del(list, list[1])
 	end
+end
+
+--reset game info for next level
+function reset_info()
+	state="game" 
+	remove(bullet_objs)
+	player.x,player.y,player.powerup,player.points=25,64,"",0
 end
 
 --load wave from level file
