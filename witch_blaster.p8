@@ -8,9 +8,9 @@ __lua__
 	Make boss enemies (egg) (wizard)
 	Maybe extra levels and a second final boss (wizard) due to extra time
 
-	Music
-	in update- if(music_on=="on") music(track)
-	track=1,track=2 etc in different states
+	game music
+	shop music
+	at least 1 boss song ideally 2
 
 	Make little ending animation (say something frickin cool like "get smoked babee B)")
 
