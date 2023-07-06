@@ -25,9 +25,7 @@ __lua__
 function _init()
 	state="menu"
 	frame=0
-	track=0
-	music(track)
-
+	music(0)
 	--menu
 	witch_y,blaster_x=-20,-100
 	game_pal="trans"
@@ -292,7 +290,7 @@ function update_menu()
 
 	if option==2 then
 		if btnp(1) or btnp(0) then
-			if(music_on=="on") music_on="off" music(-1) else music_on="on" music(track)
+			if(music_on=="on") music_on="off" music(-1) else music_on="on" music(0)
 		end
 	end
 
@@ -356,7 +354,7 @@ function update_intro()
     if(btnp(5)) sfx(7) intro_state+=1
 
     --start game
-    if(intro_state>2) reset_info()
+    if(intro_state>2) reset_info() music(2)
 end
 
 function draw_intro()
@@ -445,9 +443,6 @@ function update_game()
 	else
 		blast_text=12
 	end
-
-	--change song
-	track=2
 end
 
 function draw_game()
