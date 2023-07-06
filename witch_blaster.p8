@@ -8,6 +8,8 @@ __lua__
 	Make boss enemies (egg) (wizard)
 	Maybe extra levels and a second final boss (wizard) due to extra time
 
+	change mag to e
+
 	game music
 	shop music
 	at least 1 boss song ideally 2
