@@ -19,8 +19,7 @@ __lua__
 	Refine enemies
 	Refine movement
 	Refine sprites
-
-	Make shop a little more visually intersting
+	Refine shop
 ]]--
 
 function _init()
