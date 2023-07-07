@@ -46,9 +46,9 @@ function _init()
 	text_wave=0
 
 	--get level info from text file
-	#include levels.txt
+	#include levels.lua
 	levels={level1,level2,level3,level4,level5}
-	level=1
+	level=2
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
 	level_clear=false
