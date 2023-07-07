@@ -151,6 +151,7 @@ function _init()
 					state="shop"
 					level_clear=false
 					sfx(5)
+					if(music_on=="on")music(0)
 				else
 					--blast
 					if (self.mag_level==116) self.blast=true explosion(blast_particle,self.x+2,self.y-10) sfx(3)
@@ -557,7 +558,13 @@ function update_shop()
 	end
 
 	--leavinf dialogue
-	if (close and btnp(5)) close=false open=true level+=1 wave1=true sfx(5) reset_info()
+	if close and btnp(5) then
+		close,open,wave1=false,true,true
+		level+=1 
+		sfx(5) 
+		reset_info() 
+		if(music_on=="on")music(2,0,7)
+	end
 
 	--move cursor
 	if (btnp(2)) cursor.y-=8
