@@ -915,7 +915,7 @@ function make_wizard(x,y)
 			self:check_collision(self)
 
 			--shoot multiple times with random time offsets
-			for i=0,2 do
+			for i=0,3 do
 				self:shoot_player(self,flr(rnd(20)+10),5)
 			end
 
