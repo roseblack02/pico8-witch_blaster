@@ -4,22 +4,21 @@ __lua__
 --main tab
 
 --[[todo
-	Make 8 levels (4 and 8 are bosses)
-	Make boss enemies (egg) (wizard)
-	Maybe extra levels and a second final boss (wizard) due to extra time
+	make 6 levels (3 and 6 are bosses)
+	make boss enemies (egg) (wizard)
 
 	game music
 	shop music
 	at least 1 boss song ideally 2
 
-	Make little ending animation (say something frickin cool like "get smoked babee B)")
+	make little ending animation (say something frickin cool like "get smoked babee B)")
 
-	Make intro animation with story text (say somthin like "i need to ice that fool >:(")
+	make intro animation with story text (say somthin like "i need to ice that fool >:(")
 
-	Refine enemies
-	Refine movement
-	Refine sprites
-	Refine shop
+	refine enemies
+	refine movement
+	refine sprites
+	refine shop
 ]]--
 
 function _init()
@@ -47,8 +46,8 @@ function _init()
 
 	--get level info from text file
 	#include levels.lua
-	levels={level1,level2,level3,level4,level5}
-	level=2
+	levels={level1,level2,level3,level4,level5,level6}
+	level=3
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
 	level_clear=false
