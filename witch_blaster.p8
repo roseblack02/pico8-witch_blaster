@@ -8,6 +8,7 @@ __lua__
 	make boss enemies (egg) (wizard)
 
 	add some little article effects etc for wizard
+	text above player saying a randomyl chosen message like "get smoked"
 
 
 	game music
@@ -208,6 +209,9 @@ function _init()
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,12,self.x-8,self.y-8,2,2)
+
+			--boss defeat text
+			--if(level_clear and (level==3 or level==6)) 
 		end,
 		check_collision=function(self)
 			--enemy collision
