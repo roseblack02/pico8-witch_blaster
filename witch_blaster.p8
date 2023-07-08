@@ -6,6 +6,10 @@ __lua__
 --[[todo
 	make 6 levels (3 and 6 are bosses)
 	make boss enemies (egg) (wizard)
+	
+	make wizard boss spawn flie at top and bottom to force player to move around more
+	also provides playerwith magic
+
 
 	game music
 	shop music
