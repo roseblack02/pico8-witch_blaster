@@ -6,9 +6,8 @@ __lua__
 --[[todo
 	make 6 levels (3 and 6 are bosses)
 	make boss enemies (egg) (wizard)
-	
-	make wizard boss spawn flie at top and bottom to force player to move around more
-	also provides playerwith magic
+
+	add some little article effects etc for wizard
 
 
 	game music
@@ -911,6 +910,7 @@ function make_wizard(x,y)
 		points=2000,
 		angle=0,
 		boss=true,
+		spawn_count=0,
 		update=function(self)
 			--move forward then stop when in on the right side of the screen
 			if(self.x>104) self.x-=0.4
@@ -926,6 +926,12 @@ function make_wizard(x,y)
 			for i=0,3 do
 				self:shoot_player(self,flr(rnd(20)+10),5)
 			end
+
+			--spawn flies at top and bottom of screen
+			if (self.spawn_count>240) self.spawn_count=0
+			self.spawn_count+=1
+
+			if(self.spawn_count==240) make_fly(138,14) make_fly(138,94)
 
 			self:despawn(self)
 		end,
