@@ -725,7 +725,7 @@ function make_enemy_obj(name,x,y,props)
 						player.mag_level+=player.mag_gained
 
 						--check if boss and give coins
-						player.coins+=20
+						if (self.boss) player.coins+=20
 					end
 				else
 					self.is_hit=false
