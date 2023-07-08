@@ -926,7 +926,6 @@ function make_wizard(x,y)
 			self:despawn(self)
 		end,
 		draw=function(self)
-			circ(self.x,self.y,self.width/2,7)
 			outlined_sprites(self.sprite,8,self.x-12,self.y-16,3,4)
 		end
 	})
