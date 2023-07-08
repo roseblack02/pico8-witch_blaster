@@ -1,5 +1,5 @@
 --multidimensional array of coords for levels
---level > wave > enemy type (flies,gulls,owls,worms,snails,chickens) > coords
+--level > wave > enemy type (flies,gulls,owls,worms,snails,chickens,wizards,eggs) > coords
 level1={wave1={flies={{200,24},{200,44},{200,64},{200,84},
 						{300,34},{300,54},{300,74},{300,94},
 						{400,24},{400,44},{400,64},{400,84},},
@@ -40,3 +40,11 @@ level2={wave1={gulls={{215,38},{215,70},{215,102}},
 		wave3={
 			}
 		}--]]
+
+		level3={wave1={wizards={{200,94}}
+			},
+		wave2={
+			},
+		wave3={
+			}
+		}

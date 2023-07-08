@@ -729,10 +729,14 @@ function make_enemy_obj(name,x,y,props)
 				end
 			end
 		end,
-		shoot_player=function(self)
+		shoot_player=function(self,offset,speed)
+			--set offset to 0 and speed to 1 if not specified
+			offset=0 or offset
+			speed=1 or speed
+
 			--shoot at player
-			self.shoot_timer+=1
-			if (self.shoot_timer>180) self.shoot_timer=0
+			self.shoot_timer+=speed
+			if (self.shoot_timer>180+offset) self.shoot_timer=0
 
 			if (self.x<(player.x+200) and self.shoot_timer==179) make_enemy_bullet(self.x,self.y)
 		end,
@@ -882,12 +886,50 @@ function make_fly(x,y)
 				self.sprite=11
 			end
 
-			self:shoot_player(self)
+			self:shoot_player(self,0,2)
 
 			self:despawn(self)
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-2,self.y-2,1,1)
+		end
+	})
+end
+
+function make_wizard(x,y)
+	return make_enemy_obj("wizard",x,y,{
+		width=28,
+		hp=100,
+		sprite=77,
+		points=2000,
+		angle=0,
+		velocity_y=0.75,
+		update=function(self)
+			--move forward then stop when in on the right side of the screen
+			if(self.x>104) self.x-=0.4
+
+			--bob up and down
+			if self.y<(flr(rnd(15))+20) then
+				self.velocity_y=0.75
+			elseif self.y>(flr(rnd(15))+90) then
+				self.velocity_y= -0.75
+			end
+
+			self.y+=self.velocity_y
+
+			self:check_collision(self)
+
+			--shoot multiple times with random time offsets
+			self:shoot_player(self,0,10)
+			self:shoot_player(self,flr(rnd(10))+5,10)
+			self:shoot_player(self,flr(rnd(25))+5,10)
+			self:shoot_player(self,flr(rnd(35))+5,10)
+
+			self:despawn(self)
+		end,
+		draw=function(self)
+			circ(self.x,self.y,self.width/2,7)
+			outlined_sprites(self.sprite,8,self.x-12,self.y-16,3,4)
 		end
 	})
 end
@@ -1169,6 +1211,18 @@ function load_wave(wave)
 	if wave.chickens then
 		for chicken in all(wave.chickens) do
 			make_chicken(chicken[1],chicken[2])
+		end
+	end
+
+	if wave.wizards then
+		for wizard in all(wave.wizards) do
+			make_wizard(wizard[1],wizard[2])
+		end
+	end
+
+	if wave.eggs then
+		for egg in all(wave.eggs) do
+			--make_egg(egg[1],egg[2])
 		end
 	end
 end
