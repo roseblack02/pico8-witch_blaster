@@ -729,17 +729,16 @@ function make_enemy_obj(name,x,y,props)
 				end
 			end
 		end,
-		shoot_player=function(self,offset,speed,size)
-			--set offset to 0, speed to 1, size to 4 if not specified
+		shoot_player=function(self,offset,speed)
+			--set offset to 0 and speed to 1 if not specified
 			offset=0 or offset
 			speed=1 or speed
-			size=4 or size
 
 			--shoot at player
 			self.shoot_timer+=speed
 			if (self.shoot_timer>180+offset) self.shoot_timer=0
 
-			if (self.x<(player.x+200) and self.shoot_timer>=179) make_enemy_bullet(self.x,self.y,size)
+			if (self.x<(player.x+200) and self.shoot_timer==179+offset) make_enemy_bullet(self.x,self.y)
 		end,
 		despawn=function(self)
 			--delete self if off screen
@@ -916,8 +915,8 @@ function make_wizard(x,y)
 			self:check_collision(self)
 
 			--shoot multiple times with random time offsets
-			for i=0,3 do
-				self:shoot_player(self,flr(rnd(10))+5,10)
+			for i=0,2 do
+				self:shoot_player(self,flr(rnd(20)+10),5)
 			end
 
 			self:despawn(self)
@@ -948,10 +947,11 @@ function make_chicken(x,y)
 	})
 end
 
-function make_enemy_bullet(x,y,width)
-	return make_enemy_obj("enemy_bullet",x,y,width,{
+function make_enemy_bullet(x,y)
+	return make_enemy_obj("enemy_bullet",x,y,{
+		width=4,
 		update=function(self)
-			self.x-=0.8
+			self.x-=0.95
 			--delete self if off screen
 			if (self.x<(player.x-128)) del(enemy_objs,self)
 		end,
