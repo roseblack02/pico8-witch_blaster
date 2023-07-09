@@ -55,6 +55,8 @@ function _init()
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
 	level_clear=false
+	boss_message={"level cleared!","get smoked b)","foe vanquished","enemy felled","foe smoked"}
+	message=1
 
 	--store
 	blink_timer=0
@@ -209,9 +211,6 @@ function _init()
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,12,self.x-8,self.y-8,2,2)
-
-			--boss defeat text
-			--if(level_clear and (level==3 or level==6)) 
 		end,
 		check_collision=function(self)
 			--enemy collision
@@ -731,8 +730,8 @@ function make_enemy_obj(name,x,y,props)
 						--give player magic
 						player.mag_level+=player.mag_gained
 
-						--check if boss and give coins
-						if (self.boss) player.coins+=20
+						--check if boss and give coins and randomly choose a message for player to say
+						if (self.boss) player.coins+=20 player.message=flr(rnd(3))+1
 					end
 				else
 					self.is_hit=false
@@ -748,11 +747,11 @@ function make_enemy_obj(name,x,y,props)
 			self.shoot_timer+=speed
 			if (self.shoot_timer>180+offset) self.shoot_timer=0
 
-			if (self.x<(player.x+200) and self.shoot_timer==179+offset) make_enemy_bullet(self.x,self.y)
+			if (self.x<200 and self.shoot_timer==179+offset) make_enemy_bullet(self.x,self.y)
 		end,
 		despawn=function(self)
 			--delete self if off screen
-			if (self.x<(player.x-128)) del(enemy_objs,self)
+			if (self.x<-20) del(enemy_objs,self)
 		end
 	}
 	--loop through properties and assign it to the obj table
@@ -970,7 +969,7 @@ function make_enemy_bullet(x,y)
 		update=function(self)
 			self.x-=0.95
 			--delete self if off screen
-			if (self.x<(player.x-128)) del(enemy_objs,self)
+			if (self.x<-6) del(enemy_objs,self)
 		end,
 		draw=function(self)
 			circfill(self.x,self.y,self.width/2,8)
@@ -994,7 +993,7 @@ function make_bullet_obj(x,y,speed,direction)
 			if (direction[4]) self.x-=speed
 
 			--delete self if off screen
-			if (self.x>(player.x+120) or self.x<player.x-120 or self.y>(player.y+120) or self.y<player.y-120) del(bullet_objs,self)
+			if (self.x>134 or self.x<-6 or self.y>134 or self.y<-6) del(bullet_objs,self)
 		end,
 		draw=function(self)
 			circfill(self.x,self.y,self.width/2,12)
@@ -1020,7 +1019,7 @@ function make_pickup_obj(name,x,y,props)
 		end,
 		despawn=function(self)
 			--delete self if off screen
-			if (self.x<(player.x-128)) del(pickup_objs,self)
+			if (self.x<-6) del(pickup_objs,self)
 		end
 	}
 	--loop through properties and assign it to the obj table
