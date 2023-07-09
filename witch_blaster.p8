@@ -7,9 +7,7 @@ __lua__
 	make 6 levels (3 and 6 are bosses)
 	make boss enemies (egg) (wizard)
 
-	add some little article effects etc for wizard
-	text above player saying a randomyl chosen message like "get smoked"
-
+	add some little particle effects etc for wizard
 
 	game music
 	shop music
@@ -67,6 +65,7 @@ function _init()
 	--particle effects
 	blast_particle={}
 	hit_particle={}
+	trail_particle={}
 
 	--table of enemies
 	enemy_objs={}
@@ -469,6 +468,9 @@ function draw_game()
 
 	--map
 	map(map_x,0)
+
+	--trail effect
+	draw_trail(7)
 
 	--draw objects
 	local enemy
@@ -935,6 +937,10 @@ function make_wizard(x,y)
 			if (self.spawn_count>240) self.spawn_count=0
 			self.spawn_count+=1
 
+			trail(self.x-10,self.y-6,{false,true,false,false})
+
+			trail(self.x+10,self.y-6,{false,true,false,false})
+
 			if(self.spawn_count==240) make_fly(138,14) make_fly(138,94)
 
 			self:despawn(self)
@@ -1340,6 +1346,36 @@ function draw_explosion(type,colours)
 				del(type,my_particle)
 			end
 		end
+	end
+end
+
+--trail effect
+function trail(x,y,direction)
+	for i=1,4 do
+		local my_particle={
+			x=x,
+			y=y+(flr(rnd(6)-3)),
+			direction=direction,
+			time=flr(rnd(10))+10
+		}
+		add(trail_particle,my_particle)
+	end
+end
+
+--draw the trail
+function draw_trail(colour)
+	for my_particle in all(trail_particle) do
+		--move particle based on direction they shoot in (clockwise)
+		if (my_particle.direction[1]) my_particle.y-=1 
+		if (my_particle.direction[2]) my_particle.x+=1
+		if (my_particle.direction[3]) my_particle.y+=1
+		if (my_particle.direction[4]) my_particle.x-=1   
+
+		--tick down time
+		my_particle.time-=1
+		if(my_particle.time<0) del(trail_particle,my_particle)
+
+		pset(my_particle.x,my_particle.y,colour)
 	end
 end
 
