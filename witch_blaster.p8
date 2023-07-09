@@ -141,7 +141,7 @@ function _init()
 
 			--limit position
 			self.x=mid(8,self.x,120)
-			self.y=mid(10,self.y,120)
+			self.y=mid(10,self.y,115)
 
 			--bullet
 			if btnp(5) then
@@ -937,9 +937,9 @@ function make_wizard(x,y)
 			if (self.spawn_count>240) self.spawn_count=0
 			self.spawn_count+=1
 
-			trail(self.x-10,self.y-6,{false,true,false,false})
+			trail(self.x-10,self.y-6,{false,false,false,true})
 
-			trail(self.x+10,self.y-6,{false,true,false,false})
+			trail(self.x+10,self.y-6,{false,false,false,true})
 
 			if(self.spawn_count==240) make_fly(138,14) make_fly(138,94)
 
@@ -1365,11 +1365,11 @@ end
 --draw the trail
 function draw_trail(colour)
 	for my_particle in all(trail_particle) do
-		--move particle based on direction they shoot in (clockwise)
-		if (my_particle.direction[1]) my_particle.y-=1 
-		if (my_particle.direction[2]) my_particle.x+=1
-		if (my_particle.direction[3]) my_particle.y+=1
-		if (my_particle.direction[4]) my_particle.x-=1   
+		--move particle based on direction of the object theyre trailing (clockwise)
+		if (my_particle.direction[1]) my_particle.y+=1 
+		if (my_particle.direction[2]) my_particle.x-=1
+		if (my_particle.direction[3]) my_particle.y-=1
+		if (my_particle.direction[4]) my_particle.x+=1   
 
 		--tick down time
 		my_particle.time-=1
