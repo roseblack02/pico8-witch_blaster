@@ -55,7 +55,7 @@ function _init()
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
 	level_clear=false
-	boss_message={"level cleared!","get smoked b)","foe vanquished","enemy felled","foe smoked"}
+	boss_message={"get smoked b)","foe vanquished","enemy felled","foe smoked"}
 	message=1
 
 	--store
@@ -526,7 +526,8 @@ function draw_game()
 
 	--level clear screen
 	if level_clear then
-		waving_text("level cleared!",33,40,7,1)
+		--display level cleared or special boss cleared message
+		if(level==3 or level==6) waving_text(boss_message[message],61-((#boss_message[message])*2),40,7,1) else waving_text("level cleared!",33,40,7,1)
 		rectfill(35,52,92,74,1)
 		rectfill(36,53,91,73,14)
 		outlined_text("score : ",40,56,7,1)
@@ -731,7 +732,7 @@ function make_enemy_obj(name,x,y,props)
 						player.mag_level+=player.mag_gained
 
 						--check if boss and give coins and randomly choose a message for player to say
-						if (self.boss) player.coins+=20 player.message=flr(rnd(3))+1
+						if (self.boss) player.coins+=20 message=flr(rnd(3))+1
 					end
 				else
 					self.is_hit=false
