@@ -956,7 +956,7 @@ function make_chicken(x,y)
 		sprite=10,
 		points=50,
 		update=function(self)
-			self.x-=0.2
+			self.x-=0.45
 
 			self:check_collision(self)
 
