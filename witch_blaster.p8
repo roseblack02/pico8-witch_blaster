@@ -504,8 +504,8 @@ function draw_game()
 
 	--hud
 	--mag level
-	spr(16,1,1)
-	outlined_text(player.mag_level.."%",12,2,7,1)
+	outlined_text("★ "..player.mag_level.."%",2,2,7,1)
+	--outlined_text(player.mag_level.."%",12,2,7,1)
 
 	--blast prompt
 	if (player.mag_level==100) outlined_text("blast 🅾️",48,112,blast_text,1)
@@ -1139,7 +1139,8 @@ function make_magic(x,y)
 			end
 		end,
 		draw=function(self)
-			outlined_sprites(16,12,self.x-4,self.y-4,1,1)
+			--outlined_sprites(16,12,self.x-4,self.y-4,1,1)
+			outlined_text("★",self.x-4,self.y-3,7,12)
 		end
 	})
 end
