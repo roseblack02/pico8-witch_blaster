@@ -1125,6 +1125,9 @@ function make_magic(x,y)
 	return make_pickup_obj("magic",x,y,{
 		update=function(self)
 			self.x-=0.25
+			
+			trail(self.x,self.y,{false,false,false,true})
+
 			self:despawn(self)
 
 			--player pickup
@@ -1139,7 +1142,6 @@ function make_magic(x,y)
 			end
 		end,
 		draw=function(self)
-			--outlined_sprites(16,12,self.x-4,self.y-4,1,1)
 			outlined_text("★",self.x-4,self.y-3,7,12)
 		end
 	})
