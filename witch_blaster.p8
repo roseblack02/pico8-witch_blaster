@@ -1295,14 +1295,15 @@ end
 --create explosion particles
 function explosion(type,x,y)
 	for i=1,10 do
-		local my_particle={}
-		my_particle.x=x 
-		my_particle.y=y 
-		my_particle.sx=rnd()*25-3
-		my_particle.sy=rnd()*25-3
-		my_particle.size=rnd(3)+1
-		my_particle.age=rnd(2)
-		my_particle.max_age=10+rnd(10)
+		local my_particle={
+			x=x,
+			y=y,
+			sx=rnd()*25-3,
+			sy=rnd()*25-3,
+			size=rnd(3)+1,
+			age=rnd(2),
+			max_age=10+rnd(10)
+		}
 
 		add(type,my_particle)
 	end
