@@ -7,8 +7,6 @@ __lua__
 	make 6 levels (3 and 6 are bosses)
 	make boss enemies (egg) (wizard)
 
-	add some little particle effects etc for wizard
-
 	game music
 	shop music
 	at least 1 boss song ideally 2
@@ -20,7 +18,7 @@ __lua__
 	refine enemies
 	refine movement
 	refine sprites
-	refine shop
+	refine shop look and prices
 ]]--
 
 function _init()
@@ -49,7 +47,7 @@ function _init()
 	--get level info from text file
 	#include levels.lua
 	levels={level1,level2,level3,level4,level5,level6}
-	level=3
+	level=4
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
 	level_clear=false
@@ -1631,10 +1629,10 @@ __sfx__
 __music__
 01 0a0b0c10
 02 0d0e0f11
-01 12131459
-00 15131659
-00 12131459
-00 17181959
-00 1a181b59
-02 15131659
+01 52535459
+00 55535659
+00 52535459
+00 57585959
+00 5a585b59
+02 55535659
 
