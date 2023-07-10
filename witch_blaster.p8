@@ -47,7 +47,7 @@ function _init()
 	--get level info from text file
 	#include levels.lua
 	levels={level1,level2,level3,level4,level5,level6}
-	level=4
+	level=1
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
 	level_clear=false
@@ -87,6 +87,7 @@ function _init()
 		shot_speed=2,
 		dmg=1,
 		mag_level=0,
+		current_mag=0,
 		blast=false,
 		blast_dur=2,
 		coins=0,
@@ -102,6 +103,7 @@ function _init()
 		burst=false,
 		double=false,
 		mag_gained=3,
+		bullet_colour=7,
 		update=function(self)
 			--reset variables
 			self.down,self.up=false,false
@@ -142,7 +144,7 @@ function _init()
 			self.y=mid(10,self.y,115)
 
 			--bullet
-			if btnp(5) then
+			if btnp(5) and not self.blast then
 				if (self.double) make_bullet_obj(self.x,self.y-4,self.shot_speed+self.shot_speed_mod,{false,true,false,false}) make_bullet_obj(self.x,self.y+4,self.shot_speed+self.shot_speed_mod,{false,true,false,false}) else make_bullet_obj(self.x,self.y,self.shot_speed+self.shot_speed_mod,{false,true,false,false})
 				sfx(2)
 			end
@@ -160,7 +162,15 @@ function _init()
 				end
 			end
 
-			if (self.blast) self.mag_level-=self.blast_dur make_bullet_obj(self.x,self.y,6,{false,true,false,false})
+			--change bullet colour duting blast as mag_level drains
+			if(self.mag_level>self.current_mag) self.current_mag=self.mag_level
+
+			local colour={12,14,7,14,12}
+			for i=5,1,-1 do
+				if(self.mag_level<self.current_mag*(i/5)) self.bullet_colour=colour[i]
+			end
+
+			if (self.blast) self.mag_level-=self.blast_dur make_bullet_obj(self.x,self.y,6,{false,true,false,false},self.bullet_colour)
 
 			--end blast
 			if (self.mag_level<1) self.blast=false
@@ -984,12 +994,13 @@ function make_enemy_bullet(x,y)
 end
 
 --make bullets
-function make_bullet_obj(x,y,speed,direction)
+function make_bullet_obj(x,y,speed,direction,colour)
 	--create bullet
 	local obj={
 		x=x,
 		y=y,
 		width=6,
+		colour=colour or 7,
 		update=function(self)
 			--choose which direction (clockwise bool) to shoot and apply speed
 			if (direction[1]) self.y-=speed
@@ -1002,7 +1013,7 @@ function make_bullet_obj(x,y,speed,direction)
 		end,
 		draw=function(self)
 			circfill(self.x,self.y,self.width/2,12)
-			circfill(self.x,self.y,(self.width/2)-1,7)
+			circfill(self.x,self.y,(self.width/2)-1,self.colour)
 		end
 	}
 	--add object table to bullet table
