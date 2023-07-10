@@ -57,8 +57,8 @@ function _init()
 	--store
 	blink_timer=0
 	open,buying,close=true,false,false
-	cursor={sprite=7,x=48,y=34}
-	hp_upgrades,dmg_upgrades,blast_upgrades,magic_upgrades=1,1,1,1
+	cursor={sprite=7,x=64,y=34}
+	e_upgrades,drain_upgrades,dmg_upgrades,blast_upgrades,magic_upgrades=1,1,1,1
 
 	--particle effects
 	blast_particle={}
@@ -81,8 +81,9 @@ function _init()
 		width=8,
 		velocity_x=0,
 		velocity_y=0,
-		hp=3,
-		max_hp=3,
+		e_level=116,
+		e_gained=5,
+		e_drain=0.1,
 		lives=3,
 		shot_speed=2,
 		dmg=1,
@@ -102,7 +103,6 @@ function _init()
 		shot_speed_mod=0,
 		burst=false,
 		double=false,
-		mag_gained=3,
 		bullet_colour=7,
 		update=function(self)
 			--reset variables
@@ -158,7 +158,7 @@ function _init()
 					if(music_on=="on")music(0)
 				else
 					--blast
-					if (self.mag_level==116) self.blast=true explosion(blast_particle,self.x+2,self.y-10) sfx(3)
+					if (self.mag_level==100) self.blast=true explosion(blast_particle,self.x+2,self.y-10) sfx(3)
 				end
 			end
 
@@ -185,8 +185,8 @@ function _init()
 				sfx(2)
 			end
 
-			--limit e level
-			self.mag_level=mid(0,self.mag_level,116)
+			--limit mag_level
+			self.mag_level=mid(0,self.mag_level,100)
 
 			--animate sprite
 			if not self.is_hit then
@@ -207,14 +207,17 @@ function _init()
 				self:check_collision(self)
 			end
 
-			--limit hp
-			self.hp=mid(0,self.hp,self.max_hp)
+			--limit e_level
+			self.e_level=mid(0,self.e_level,116)
+
+			--contstantly drain players e_level
+			if (not level_clear) self.e_level-=self.e_drain
 
 			--check if player has lost a life
-			if (self.hp<1 and self.lives>0) self.x=25 self.y=64 self.lives-=1 self.hp=self.max_hp
+			if (self.e_level<1 and self.lives>0) self.x=25 self.y=64 self.lives-=1 self.e_level=116
 
 			--check if player is dead
-			if (self.hp<1 and self.lives<1) state="end"
+			if (self.e_level<1 and self.lives<1) state="end"
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,12,self.x-8,self.y-8,2,2)
@@ -232,7 +235,7 @@ function _init()
 					sfx(1)
 
 					--take damage
-					self.hp-=1
+					self.e_level-=20
 				end
 			end
 		end
@@ -278,15 +281,15 @@ function _draw()
 	end
 
 	--debug info
-	print("mx:"..mouse_x,0,113,8)
-	print("my:"..mouse_y,0,121,8)
+	print("mx:"..mouse_x,0,103,8)
+	print("my:"..mouse_y,0,111,8)
 	pset(mouse_x,mouse_y,8)
 
-	print("px:"..flr(player.x),25,113,2)
-	print("py:"..flr(player.y),25,121,2)
+	print("px:"..flr(player.x),25,103,2)
+	print("py:"..flr(player.y),25,111,2)
 
-	print("lt:"..flr(level_timer),50,113,14)
-	print("ec:"..#enemy_objs,50,121,14)
+	print("lt:"..flr(level_timer),50,103,14)
+	print("ec:"..#enemy_objs,50,111,14)
 end
 
 --game states
@@ -443,7 +446,7 @@ function update_game()
 			load_wave(levels[level].wave3)
 			wave3=false
 		--end level based on timer and on if there are no enemies
-		elseif level_timer>40 and #enemy_objs<1 then
+		elseif level_timer>45 and #enemy_objs<1 then
 			level_clear=true
 			level_timer=0
 		end 
@@ -500,13 +503,12 @@ function draw_game()
 	draw_explosion(blast_particle,{1,12,12,7})
 
 	--hud
-	--hp
-	for hearts=1,player.max_hp do
-		local sprite=48
-		if (hearts<=player.hp) sprite=32
+	--mag level
+	spr(16,1,1)
+	outlined_text(player.mag_level.."%",12,2,7,1)
 
-		spr(sprite,(hearts*9)-8,1)
-	end
+	--blast prompt
+	if (player.mag_level==100) outlined_text("blast 🅾️",48,112,blast_text,1)
 
 	--score
 	outlined_text(player.points,64-(#tostr(player.points)*2)-1,2,7,1)
@@ -523,16 +525,14 @@ function draw_game()
 	outlined_text(player.coins,109,12,7,1)
 	spr(34,119,11)
 
-	--mag level
-	circfill(4,123,7,7)
+	--e level
+	circfill(4,122,4,7)
+	circfill(4,123,4,7)
 	rectfill(7,119,127,126,7)
 	rectfill(8,120,126,125,13)
 	rect(8,120,126,125,1)
-	spr(16,1,119)
-	rectfill(9,121,9+(player.mag_level),124,12)
-
-	--blast prompt
-	if (player.mag_level==116) outlined_text("blast 🅾️",48,112,blast_text,1)
+	spr(33,1,119)
+	rectfill(9,121,9+(player.e_level),124,12)
 
 	--level clear screen
 	if level_clear then
@@ -565,11 +565,11 @@ function update_shop()
 
 	--buy options
 	if buying and btnp(4) then	
-		if(cursor.y==34 and player.coins>9 and hp_upgrades<3) player.coins-=10 player.max_hp+=1 player.hp=player.max_hp hp_upgrades+=1 sfx(6)
-		if(cursor.y==42 and player.coins>12 and dmg_upgrades<3) player.coins-=13 player.dmg+=0.5 dmg_upgrades+=1 sfx(6)
-		if(cursor.y==50 and player.coins>17) player.coins-=18 player.lives+=1 sfx(6)
-		if(cursor.y==58 and player.coins>14 and blast_upgrades<5) player.coins-=15 player.blast_dur-=0.2 blast_upgrades+=1 sfx(6)
-		if(cursor.y==66 and player.coins>14 and magic_upgrades<5) player.coins-=15 player.mag_gained+=2 magic_upgrades+=1 sfx(6)
+		if(cursor.y==34 and player.coins>9 and e_upgrades<3) player.coins-=10 player.e_gained+=2.5 e_upgrades+=1 sfx(6)
+		if(cursor.y==42 and player.coins>14 and drain_upgrades<5) player.coins-=15 player.e_drain-=0.01 drain_upgrades+=1 sfx(6)
+		if(cursor.y==50 and player.coins>19 and dmg_upgrades<3) player.coins-=20 player.dmg+=1 sfx(6)
+		if(cursor.y==58 and player.coins>19) player.coins-=20 player.lives+=1 sfx(6)
+		if(cursor.y==66 and player.coins>14 and blast_upgrades<5) player.coins-=15 player.blast_dur-=0.2 blast_upgrades+=1 sfx(6)
 		if(cursor.y==74) buying=false close=true sfx(5)
 	end
 
@@ -626,51 +626,43 @@ function draw_shop()
 	end
 
 	--speech bubble
-	rectfill(6,30,60,84,1)
-	outlined_text("▶",59,57,7,1)
-	rectfill(8,32,58,82,7)
+	rectfill(1,30,62,84,1)
+	outlined_text("▶",61,57,7,1)
+	rectfill(3,32,60,82,7)
 
 	--speech
 	if open then
-		print("what are ya",10,34,1)
-		print("buyin?",10,40,1)
-		print("❎",50,76,1)
+		print("what are ya",5,34,1)
+		print("buyin?",5,40,1)
+		print("❎",52,76,1)
 	end
 
 	if buying then
-		print("hp $10",10,34,1)
-		print("dmg $13",10,42,1)
-		print("lives $18",10,50,1)
-		print("blast $15",10,58,1)
-		print("magic $15",10,66,1)
-		print("leave",10,74,1)
+		print("e gained $10",5,34,1)
+		print("e draining $15",5,42,1)
+		print("dmg $20",5,50,1)
+		print("lives $20",5,58,1)
+		print("blast $15",5,66,1)
+		print("leave",5,74,1)
 
-		if(cursor.y==34) outlined_text("increase maximum hp "..hp_upgrades.."/3",8,91,7,1) outlined_text("🅾️ to purchase",8,99,7,1)
-		if(cursor.y==42) outlined_text("increase damage "..dmg_upgrades.."/3",8,91,7,1) outlined_text("🅾️ to purchase",8,99,7,1)
-		if(cursor.y==50) outlined_text("purchase extra lives",8,91,7,1) outlined_text("🅾️ to purchase",8,99,7,1)
-		if(cursor.y==58) outlined_text("increase blast duration "..blast_upgrades.."/5",8,91,7,1) outlined_text("🅾️ to purchase",8,99,7,1)
-		if(cursor.y==66) outlined_text("increase magic gained "..magic_upgrades.."/5",8,91,7,1) outlined_text("🅾️ to purchase",8,99,7,1)
-		if(cursor.y==74) outlined_text("leave shop",8,91,7,1) outlined_text("🅾️ to leave",8,99,7,1)
+		if(cursor.y==34) outlined_text("increase estrogen gained "..e_upgrades.."/3",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
+		if(cursor.y==42) outlined_text("slower draining of estrogen "..drain_upgrades.."/5",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
+		if(cursor.y==50) outlined_text("increase damage "..dmg_upgrades.."/3",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
+		if(cursor.y==58) outlined_text("purchase extra lives ",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
+		if(cursor.y==66) outlined_text("increase blast duration "..blast_upgrades.."/3",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
+		if(cursor.y==74) outlined_text("leave shop",3,91,7,1) outlined_text("🅾️ to leave",3,99,7,1)
 
 		--spr(cursor.sprite,cursor.x,cursor.y)
 		outlined_text("◀",cursor.x,cursor.y,8,1)
 	end
 
 	if close then
-		print("come back",10,34,1)
-		print("any time!",10,40,1)
-		print("❎",50,76,1)
+		print("come back any",5,34,1)
+		print("time!",5,40,1)
+		print("❎",52,76,1)
 	end
 
 	--hud
-	--hp
-	for hearts=1,player.max_hp do
-		local sprite=48
-		if (hearts<=player.hp) sprite=32
-
-		spr(sprite,(hearts*9)-8,1)
-	end
-
 	--lives
 	outlined_text(player.lives,109,2,7,1)
 	spr(50,119,1)
@@ -734,12 +726,12 @@ function make_enemy_obj(name,x,y,props)
 						local rand=flr(rnd(9))+1
 
 						if (rand==1) make_powerup(self.x,self.y)
-						if (rand==2) make_health(self.x,self.y)
-						if (rand>2 and rand<4) make_magic(self.x,self.y)
-						if (rand>3) make_coin(self.x,self.y)
+						if (rand>1 and rand<4) make_estrogen(self.x,self.y)
+						if (rand>3 and rand<5) make_magic(self.x,self.y)
+						if (rand>4) make_coin(self.x,self.y)
 
-						--give player magic
-						player.mag_level+=player.mag_gained
+						--give player e
+						player.e_level+=player.e_gained
 
 						--check if boss and give coins and randomly choose a message for player to say
 						if (self.boss) player.coins+=20 message=flr(rnd(3))+1
@@ -1048,8 +1040,8 @@ function make_pickup_obj(name,x,y,props)
 	return obj
 end
 
---health pickup
-function make_health(x,y)
+--e pickup
+function make_estrogen(x,y)
 	return make_pickup_obj("health",x,y,{
 		update=function(self)
 			self.x-=0.25
@@ -1058,7 +1050,7 @@ function make_health(x,y)
 			--player pickup
 			if circles_overlapping(self,player) then
 				--add hp
-				player.hp+=1
+				player.e_level+=15
 
 				sfx(4)
 
@@ -1138,7 +1130,7 @@ function make_magic(x,y)
 			--player pickup
 			if circles_overlapping(self,player) then
 				--add magic
-				player.mag_level+=12
+				player.mag_level+=25
 
 				sfx(4)
 
@@ -1192,10 +1184,10 @@ function reset_info()
 	remove(bullet_objs)
 
 	--reset player position, points, and powerup for next level
-	player.x,player.y,player.powerup,player.points=25,64,"",0
+	player.x,player.y,player.powerup,player.points,player.e_level=25,64,"",0,116
 
 	--reset more stats if starting from intro screen
-	if(state=="intro") player.hp,player.max_hp,player.lives,player.dmg,player.mag_level,player.blast_dur,player.mag_gained=3,3,3,1,0,2,3
+	if(state=="intro") player.lives,player.dmg,player.mag_level,player.blast_dur,player.e_gained,player.e_drain=3,1,0,2,5,0.1
 
 	--change to game
 	state="game" 
@@ -1467,30 +1459,30 @@ __gfx__
 0070070000000001ceeff110000000011ccccc100000000788888770000000000000000000000000011877111555111119977777777771111e2eeee2211eeee1
 00000000000000011efff10000000001ceeff1100000000778888700000000000000000000000000001111101111100011111111111111101eeeeee11111eee1
 0000000001111011ccc11100000000011efff1000777707788877700000000000000000000000000000000000000000000000000000000001111111100011111
-000000001144111eeeeef11100111011ccc111007788777888888777000000000000000000000000000000000000000000000000000000000111100111111000
-011111101444444eee4444411114111eeeeef11178888888888888870000000000000000000000000000000000111110000000000000011111ee111122ee1100
-11cccc11111411cee11111111444444eee4444417778778887777777000000000000000000000000000000000116661100111111111111711e2ee11222eee110
-1dcddcc1001111c111000000114411cee1111111007777877700000000000000000000000000000000000000116677711117c777777777111eeeee2222eeee11
-1dccccc10000011100000000011111c111000000000007770000000000000000000000000000000000000000185777711997777777777110111eeee2211eeee1
-11dddd11000000000000000000000111000000000000000000000000000000000000000000000000000000001555111111111167771111000011eeee1111eee1
-011111100000000000000000000000000000000000000000000000000000000000000000000000000000000011111000000001167771000000011ee110011ee1
-00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111100000000111100001111
-111111110011110001111110244224442244444224422442024444222244444200000000bbbbb300000000000000000000000001111100001111110011111000
-188118810018810011aaaa11244422442444422002442442002444422444442000000000bbbbb30000000000000000000000001124f110001333310114441100
-188888811118811119aaaaa1024444244444200000244442000244442444420000000000bbbbbb30000000000000000000000112444f10001313311444444100
-188888811888888119a99aa1002444444442000000244442000244444444200030000000bbbbbb3000000000000000000000112444ff10001333332444444110
-188888811888888119aa9aa10002444444200000002444200002444444442000b3000000bbbbbb300000000000000000000112444ff110001113333244442211
-118888111118811119aaaaa10002444442000000002444200000244444420000bb300000bbbbbb30011111111111000001112444ff1100000011333322222331
-0118811000188100119999110002444442000000002444200000244444420000bb300000b3bbbbb3114444444441111111444444444111110001133333333331
-0011110000111100011111100002444442000000002444200000244444420000bbb330003b3bbbb31f1144444444fff11f1144444444fff10000111111111111
-11111111001111100111000033333333333333330000333300000000003bbbbbbbbbbbbb330000001f2f444444f4f1111f2f44444444f1110111111011111000
-1dd11dd10118881101c1110033b333333b33b3330003bbbb00000000003bbbbbbbbbbbbbbb3000001fff424444ff11001fff4444444f11000133331114441100
-1dddddd101811181011cc1103b3b333333b3b333033bbbbb0000000003bbbbbbbbbbbbbbbbb3000019f4424444ff100019f44444441110000131331444444111
-1dddddd101811181011ccc1133b33333333333333bbbbbbb0000000303bbbb3bbbbbbbbbbbbb300011112244444f000011111111241100000133332444442331
-1dddddd10111881111ccccc13333333333333333bbbbb3bb0000003b3bbbbbb3bbbbbbbb3bbb30000001122444f1000000000001129100000113333244442331
-11dddd11000111101ceeff1133333b33333b33b3bbbbbbbb000003bb3bbbbbbbbbbbbbbbbbbbb330000011222211000000000000111100000011333322223331
-011dd1100001810011efff10333333b333b3b333bbbbbbbb000003bb3bbbbbbbbbbbbbbbbbb3bbb3000001111110000000000000000000000001133333333331
-0011110000011100011111103333333333333333bbbbbbbb00033bbb3bbbbbbbbbbbbbbbbbbbbbb3000000000000000000000000000000000000111111111111
+111001111144111eeeeef11100111011ccc111007788777888888777000000000000000000000000000000000000000000000000000000000111100111111000
+1c1111c11444444eee4444411114111eeeeef11178888888888888870000000000000000000000000000000000111110000000000000011111ee111122ee1100
+1cc11cc1111411cee11111111444444eee4444417778778887777777000000000000000000000000000000000116661100111111111111711e2ee11222eee110
+1c1cc1c1001111c111000000114411cee1111111007777877700000000000000000000000000000000000000116677711117c777777777111eeeee2222eeee11
+1c1111c10000011100000000011111c111000000000007770000000000000000000000000000000000000000185777711997777777777110111eeee2211eeee1
+1c1001c1000000000000000000000111000000000000000000000000000000000000000000000000000000001555111111111167771111000011eeee1111eee1
+1c1001c10000000000000000000000000000000000000000000000000000000000000000000000000000000011111000000001167771000000011ee110011ee1
+11100111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111100000000111100001111
+000000000000000001111110244224442244444224422442024444222244444200000000bbbbb300000000000000000000000001111100001111110011111000
+000000000111111011aaaa11244422442444422002442442002444422444442000000000bbbbb30000000000000000000000001124f110001333310114441100
+0000000011cccc1119aaaaa1024444244444200000244442000244442444420000000000bbbbbb30000000000000000000000112444f10001313311444444100
+000000001dcddcc119a99aa1002444444442000000244442000244444444200030000000bbbbbb3000000000000000000000112444ff10001333332444444110
+000000001dccccc119aa9aa10002444444200000002444200002444444442000b3000000bbbbbb300000000000000000000112444ff110001113333244442211
+0000000011dddd1119aaaaa10002444442000000002444200000244444420000bb300000bbbbbb30011111111111000001112444ff1100000011333322222331
+0000000001111110119999110002444442000000002444200000244444420000bb300000b3bbbbb3114444444441111111444444444111110001133333333331
+0000000000000000011111100002444442000000002444200000244444420000bbb330003b3bbbb31f1144444444fff11f1144444444fff10000111111111111
+00000000001111100111000033333333333333330000333300000000003bbbbbbbbbbbbb330000001f2f444444f4f1111f2f44444444f1110111111011111000
+000000000118881101c1110033b333333b33b3330003bbbb00000000003bbbbbbbbbbbbbbb3000001fff424444ff11001fff4444444f11000133331114441100
+0000000001811181011cc1103b3b333333b3b333033bbbbb0000000003bbbbbbbbbbbbbbbbb3000019f4424444ff100019f44444441110000131331444444111
+0000000001811181011ccc1133b33333333333333bbbbbbb0000000303bbbb3bbbbbbbbbbbbb300011112244444f000011111111241100000133332444442331
+000000000111881111ccccc13333333333333333bbbbb3bb0000003b3bbbbbb3bbbbbbbb3bbb30000001122444f1000000000001129100000113333244442331
+00000000000111101ceeff1133333b33333b33b3bbbbbbbb000003bb3bbbbbbbbbbbbbbbbbbbb330000011222211000000000000111100000011333322223331
+000000000001810011efff10333333b333b3b333bbbbbbbb000003bb3bbbbbbbbbbbbbbbbbb3bbb3000001111110000000000000000000000001133333333331
+0000000000011100011111103333333333333333bbbbbbbb00033bbb3bbbbbbbbbbbbbbbbbbbbbb3000000000000000000000000000000000000111111111111
 000000011111111000000000001fffffffffffff0000000111111110000000007ccccccc00000000000001111000000000000000000000000000011110000000
 00000011ffffff1100000000011fffffffffffff00000111cccccc111000000077cccccc00000000000011cc1110000000000000000000000001118811000000
 0000011ffffffff11000000001ffffffffffffff000011cccccccccc1100000077cccccc0000000000001d1dcc11000000000000000000000011888881100000
