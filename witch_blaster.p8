@@ -443,7 +443,7 @@ function update_game()
 			load_wave(levels[level].wave3)
 			wave3=false
 		--end level based on timer and on if there are no enemies
-		elseif level_timer>45 and #enemy_objs<1 then
+		elseif level_timer>40 and #enemy_objs<1 then
 			level_clear=true
 			level_timer=0
 		end 
