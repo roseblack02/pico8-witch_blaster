@@ -4,7 +4,9 @@ __lua__
 --main tab
 
 --[[todo
-	make 6 levels (3 and 6 are bosses)
+	death screen
+
+	make 7 levels (4 and 7 are bosses)
 	make boss enemies (egg) (wizard)
 
 	game music
@@ -46,7 +48,7 @@ function _init()
 
 	--get level info from text file
 	#include levels.lua
-	levels={level1,level2,level3,level4,level5,level6}
+	levels={level1,level2,level3,level4,level5,level6,level7}
 	level=1
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
@@ -83,7 +85,7 @@ function _init()
 		velocity_y=0,
 		e_level=116,
 		e_gained=5,
-		e_drain=0.1,
+		e_drain=0.15,
 		lives=3,
 		shot_speed=2,
 		dmg=1,
@@ -429,11 +431,11 @@ function update_game()
 	if (front_tree_x<-127) front_tree_x=0
 
 	--load waves
-	--count level timer
-	level_timer+=(1/60)
-
 	--load wave based on timer
 	if not level_clear then
+		--count level timer
+		level_timer+=(1/60)
+
 		if level_timer<15 and wave1 then
 			--spawn
 			load_wave(levels[level].wave1)
@@ -445,11 +447,11 @@ function update_game()
 			load_wave(levels[level].wave2)
 			wave2=false
 			wave3=true
-		elseif level_timer>30 and level_timer<45 and wave3 then
+		elseif level_timer>30 and wave3 then
 			load_wave(levels[level].wave3)
 			wave3=false
 		--end level based on timer and on if there are no enemies
-		elseif level_timer>45 and #enemy_objs<1 then
+		elseif level_timer>30 and #enemy_objs<1 then
 			level_clear=true
 			level_timer=0
 		end 
@@ -539,7 +541,7 @@ function draw_game()
 	--level clear screen
 	if level_clear then
 		--display level cleared or special boss cleared message
-		if(level==3 or level==6) waving_text(boss_message[message],61-((#boss_message[message])*2),40,7,1) else waving_text("level cleared!",33,40,7,1)
+		if(level==4 or level==6) waving_text(boss_message[message],61-((#boss_message[message])*2),40,7,1) else waving_text("level cleared!",33,40,7,1)
 		rectfill(35,52,92,74,1)
 		rectfill(36,53,91,73,14)
 		outlined_text("score : ",40,56,7,1)
@@ -573,8 +575,8 @@ function update_shop()
 	--buy options
 	if buying and btnp(4) then	
 		if(cursor.y==34 and player.coins>9 and e_upgrades<3) player.coins-=10 player.e_gained+=2.5 e_upgrades+=1 sfx(6)
-		if(cursor.y==42 and player.coins>14 and drain_upgrades<5) player.coins-=15 player.e_drain-=0.01 drain_upgrades+=1 sfx(6)
-		if(cursor.y==50 and player.coins>19 and dmg_upgrades<3) player.coins-=20 player.dmg+=1 sfx(6)
+		if(cursor.y==42 and player.coins>14 and drain_upgrades<5) player.coins-=15 player.e_drain-=0.05 drain_upgrades+=1 sfx(6)
+		if(cursor.y==50 and player.coins>17 and dmg_upgrades<3) player.coins-=18 player.dmg+=0.5 dmg_upgrades+=1 sfx(6)
 		if(cursor.y==58 and player.coins>19) player.coins-=20 player.lives+=1 sfx(6)
 		if(cursor.y==66 and player.coins>14 and blast_upgrades<5) player.coins-=15 player.blast_dur-=0.2 blast_upgrades+=1 sfx(6)
 		if(cursor.y==74) buying=false close=true sfx(5)
@@ -638,23 +640,20 @@ function draw_shop()
 	rectfill(3,32,60,82,7)
 
 	--speech
-	if open then
-		print("what are ya",5,34,1)
-		print("buyin?",5,40,1)
-		print("❎",52,76,1)
-	end
+	if (open) print("what are ya",5,34,1) print("buyin?",5,40,1) outlined_text("❎ to continue",3,91,7,1)
+	
 
 	if buying then
 		print("e gained $10",5,34,1)
 		print("e draining $15",5,42,1)
-		print("dmg $20",5,50,1)
+		print("dmg $18",5,50,1)
 		print("lives $20",5,58,1)
 		print("blast $15",5,66,1)
 		print("leave",5,74,1)
 
-		if(cursor.y==34) outlined_text("increase estrogen gained "..e_upgrades.."/3",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
-		if(cursor.y==42) outlined_text("slower draining of estrogen "..drain_upgrades.."/5",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
-		if(cursor.y==50) outlined_text("increase damage "..dmg_upgrades.."/3",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
+		if(cursor.y==34) outlined_text("increase estrogen gained ",3,91,7,1) outlined_text("from enemies "..e_upgrades.."/3",3,99,7,1) outlined_text("🅾️ to purchase",3,107,7,1)
+		if(cursor.y==42) outlined_text("slows down the draining ",3,91,7,1) outlined_text("of estrogen "..drain_upgrades.."/5",3,99,7,1) outlined_text("🅾️ to purchase",3,107,7,1)
+		if(cursor.y==50) outlined_text("increase damage dealt "..dmg_upgrades.."/3",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
 		if(cursor.y==58) outlined_text("purchase extra lives ",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
 		if(cursor.y==66) outlined_text("increase blast duration "..blast_upgrades.."/3",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
 		if(cursor.y==74) outlined_text("leave shop",3,91,7,1) outlined_text("🅾️ to leave",3,99,7,1)
@@ -663,11 +662,7 @@ function draw_shop()
 		outlined_text("◀",cursor.x,cursor.y,8,1)
 	end
 
-	if close then
-		print("come back any",5,34,1)
-		print("time!",5,40,1)
-		print("❎",52,76,1)
-	end
+	if (close) print("come back any",5,34,1) print("time!",5,40,1) outlined_text("❎ to continue",3,91,7,1)
 
 	--hud
 	--lives
@@ -941,14 +936,13 @@ function make_wizard(x,y)
 			end
 
 			--spawn flies at top and bottom of screen
-			if (self.spawn_count>240) self.spawn_count=0
+			if (self.spawn_count>180) self.spawn_count=0
 			self.spawn_count+=1
+			if(self.spawn_count==180) make_fly(138,14) make_fly(138,94)
 
 			trail(self.x-10,self.y-6,{false,false,false,true})
 
 			trail(self.x+10,self.y-6,{false,false,false,true})
-
-			if(self.spawn_count==240) make_fly(138,14) make_fly(138,94)
 
 			self:despawn(self)
 		end,
