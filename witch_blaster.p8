@@ -36,7 +36,7 @@ function _init()
 	--intro
 	intro_x,intro_y=32,64
 	intro_angle=0
-	intro_state,intro_text=1,{{"a dark force lurks in this","forest, sapping the magical","energy from local residents..."},{"i need to track down and smoke","these evil spirits so that i","can complete my transformation!"}}
+	intro_state,intro_text=1,{{"dark forces lurk in this","forest, sapping the magical","energy from local residents..."},{"i need to track down and smoke","these evil spirits so that i","can complete my transformation!"}}
 
 	--game
 	map_x,front_tree_x,back_tree_x=0,0,0
@@ -211,7 +211,10 @@ function _init()
 			self.e_level=mid(0,self.e_level,116)
 
 			--contstantly drain players e_level
-			if (not level_clear) self.e_level-=self.e_drain
+			if not level_clear then
+				--slow down draining for tutorial
+				if (level==1 and level_timer<20) self.e_level-= 0.025 else self.e_level-=self.e_drain
+			end
 
 			--check if player has lost a life
 			if (self.e_level<1 and self.lives>0) self.x=25 self.y=64 self.lives-=1 self.e_level=116
@@ -505,7 +508,6 @@ function draw_game()
 	--hud
 	--mag level
 	outlined_text("★ "..player.mag_level.."%",2,2,7,1)
-	--outlined_text(player.mag_level.."%",12,2,7,1)
 
 	--blast prompt
 	if (player.mag_level==100) outlined_text("blast 🅾️",48,112,blast_text,1)
@@ -515,7 +517,7 @@ function draw_game()
 
 	--powerup
 	--dont show powerup text during tutorial
-	if(not(level==1 and level_timer<26)) outlined_text(player.powerup,64-(#player.powerup*2)-1,12,7,1)
+	if(not(level==1 and level_timer<30)) outlined_text(player.powerup,64-(#player.powerup*2)-1,12,7,1)
 
 	--lives
 	outlined_text(player.lives,109,2,7,1)
@@ -547,10 +549,15 @@ function draw_game()
 
 	--tutorial text
 	if level==1 and not level_clear then
-		if(level_timer<7) outlined_text("⬇️⬆️⬅️➡️ to move",32,12,7,1) outlined_text("❎/x to shoot",38,20,7,1)
-		if(level_timer>7 and level_timer<12) outlined_text("enemies and blue orbs",24,12,7,1) outlined_text("fill the magic bar",28,20,7,1)
-		if(level_timer>12 and level_timer<19) outlined_text("🅾️/z to blast",38,12,7,1) outlined_text("when magic bar is full",20,20,7,1)
-		if(level_timer>19 and level_timer<26) outlined_text("enemies also drop",30,12,7,1) outlined_text("coins, powerups and hp",22,20,7,1)
+		if(level_timer<5) outlined_text("⬇️⬆️⬅️➡️ to move",32,12,7,1) outlined_text("❎/x to shoot",38,20,7,1)
+
+		if(level_timer>5 and level_timer<10) outlined_text("your estrogen is",32,12,7,1) outlined_text("always draining",34,20,7,1) outlined_text("watch the bar below",28,28,7,1)
+		if(level_timer>10 and level_timer<15) outlined_text("you will lose a life",26,12,7,1) outlined_text("if it hits 0",40,20,7,1)
+		if(level_timer>15 and level_timer<20) outlined_text("enemies and pills",32,12,7,1) outlined_text("will fill it up",34,20,7,1)
+
+		if(level_timer>20 and level_timer<25) outlined_text("enemies drop pills,",28,12,7,1) outlined_text("magic, coins, and",30,20,7,1) outlined_text("random powerups",34,28,7,1)
+
+		if(level_timer>25 and level_timer<30) outlined_text("blast using 🅾️/z",32,12,7,1) outlined_text("when magic is at 100%",20,20,7,1)
 	end
 end
 
@@ -1190,7 +1197,10 @@ function reset_info()
 	player.x,player.y,player.powerup,player.points,player.e_level=25,64,"",0,116
 
 	--reset more stats if starting from intro screen
-	if(state=="intro") player.lives,player.dmg,player.mag_level,player.blast_dur,player.e_gained,player.e_drain=3,1,0,2,5,0.1
+	if state=="intro" then 
+		player.lives,player.dmg,player.mag_level,player.blast_dur,player.e_gained,player.e_drain=3,1,0,2,5,0.1
+		e_upgrades,drain_upgrades,dmg_upgrades,blast_upgrades,magic_upgrades=1,1,1,1
+	end
 
 	--change to game
 	state="game" 
@@ -1462,14 +1472,14 @@ __gfx__
 0070070000000001ceeff110000000011ccccc100000000788888770000000000000000000000000011877111555111119977777777771111e2eeee2211eeee1
 00000000000000011efff10000000001ceeff1100000000778888700000000000000000000000000001111101111100011111111111111101eeeeee11111eee1
 0000000001111011ccc11100000000011efff1000777707788877700000000000000000000000000000000000000000000000000000000001111111100011111
-111001111144111eeeeef11100111011ccc111007788777888888777000000000000000000000000000000000000000000000000000000000111100111111000
-1c1111c11444444eee4444411114111eeeeef11178888888888888870000000000000000000000000000000000111110000000000000011111ee111122ee1100
-1cc11cc1111411cee11111111444444eee4444417778778887777777000000000000000000000000000000000116661100111111111111711e2ee11222eee110
-1c1cc1c1001111c111000000114411cee1111111007777877700000000000000000000000000000000000000116677711117c777777777111eeeee2222eeee11
-1c1111c10000011100000000011111c111000000000007770000000000000000000000000000000000000000185777711997777777777110111eeee2211eeee1
-1c1001c1000000000000000000000111000000000000000000000000000000000000000000000000000000001555111111111167771111000011eeee1111eee1
-1c1001c10000000000000000000000000000000000000000000000000000000000000000000000000000000011111000000001167771000000011ee110011ee1
-11100111000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111100000000111100001111
+000000001144111eeeeef11100111011ccc111007788777888888777000000000000000000000000000000000000000000000000000000000111100111111000
+000000001444444eee4444411114111eeeeef11178888888888888870000000000000000000000000000000000111110000000000000011111ee111122ee1100
+00000000111411cee11111111444444eee4444417778778887777777000000000000000000000000000000000116661100111111111111711e2ee11222eee110
+00000000001111c111000000114411cee1111111007777877700000000000000000000000000000000000000116677711117c777777777111eeeee2222eeee11
+000000000000011100000000011111c111000000000007770000000000000000000000000000000000000000185777711997777777777110111eeee2211eeee1
+00000000000000000000000000000111000000000000000000000000000000000000000000000000000000001555111111111167771111000011eeee1111eee1
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111000000001167771000000011ee110011ee1
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111100000000111100001111
 000000000000000001111110244224442244444224422442024444222244444200000000bbbbb300000000000000000000000001111100001111110011111000
 000000000111111011aaaa11244422442444422002442442002444422444442000000000bbbbb30000000000000000000000001124f110001333310114441100
 0000000011cccc1119aaaaa1024444244444200000244442000244442444420000000000bbbbbb30000000000000000000000112444f10001313311444444100
