@@ -9,6 +9,8 @@ __lua__
 	make 7 levels (4 and 7 are bosses)
 	make boss enemies (egg) (wizard)
 
+	refine tutorial level
+
 	game music
 	shop music
 	at least 1 boss song ideally 2
