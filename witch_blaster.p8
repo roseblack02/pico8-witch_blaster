@@ -145,7 +145,7 @@ function _init()
 
 			--limit position
 			self.x=mid(8,self.x,120)
-			self.y=mid(10,self.y,115)
+			self.y=mid(10,self.y,120)
 
 			--bullet
 			if btnp(5) and not self.blast then
@@ -288,15 +288,15 @@ function _draw()
 	end
 
 	--debug info
-	print("mx:"..mouse_x,0,103,8)
-	print("my:"..mouse_y,0,111,8)
+	print("mx:"..mouse_x,0,114,8)
+	print("my:"..mouse_y,0,122,8)
 	pset(mouse_x,mouse_y,8)
 
-	print("px:"..flr(player.x),25,103,2)
-	print("py:"..flr(player.y),25,111,2)
+	print("px:"..flr(player.x),25,114,2)
+	print("py:"..flr(player.y),25,122,2)
 
-	print("lt:"..flr(level_timer),50,103,14)
-	print("ec:"..#enemy_objs,50,111,14)
+	print("lt:"..flr(level_timer),50,114,14)
+	print("ec:"..#enemy_objs,50,122,14)
 end
 
 --game states
@@ -539,6 +539,12 @@ function draw_game()
 	rect(8,120,126,125,1)
 	spr(33,1,119)
 	rectfill(9,121,9+(player.e_level),124,12)
+
+	--bar on left :/
+	--[[spr(33,1,10)
+	rectfill(1,16,8,126,1)
+	rectfill(2,17,7,125,13)
+	rectfill(7,125,2,125-player.e_level,12)]]--
 
 	--level clear screen
 	if level_clear then
