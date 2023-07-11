@@ -51,7 +51,7 @@ function _init()
 	--get level info from text file
 	#include levels.lua
 	levels={level1,level2,level3,level4,level5,level6,level7}
-	level=1
+	level=6
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
 	level_clear=false
@@ -1260,6 +1260,8 @@ function load_wave(wave)
 	end
 end
 
+-->8
+--visual effect function
 --draw srites with an outline
 function outlined_sprites(sprite,colour,x,y,width,height,flip_x,flip_y)
 	--set all colours in palette to outline colour
