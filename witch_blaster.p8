@@ -51,7 +51,7 @@ function _init()
 	--get level info from text file
 	#include levels.lua
 	levels={level1,level2,level3,level4,level5,level6,level7}
-	level=6
+	level=1
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
 	level_clear=false
@@ -549,7 +549,7 @@ function draw_game()
 	--level clear screen
 	if level_clear then
 		--display level cleared or special boss cleared message
-		if(level==4 or level==6) waving_text(boss_message[message],61-((#boss_message[message])*2),40,7,1) else waving_text("level cleared!",33,40,7,1)
+		if(level==4 or level==7) waving_text(boss_message[message],61-((#boss_message[message])*2),40,7,1) else waving_text("level cleared!",33,40,7,1)
 		rectfill(35,52,92,74,1)
 		rectfill(36,53,91,73,14)
 		outlined_text("score : ",40,56,7,1)
