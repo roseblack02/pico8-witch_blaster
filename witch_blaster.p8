@@ -51,7 +51,7 @@ function _init()
 	--get level info from text file
 	#include levels.lua
 	levels={level1,level2,level3,level4,level5,level6,level7}
-	level=1
+	level=7
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
 	level_clear=false
@@ -982,6 +982,67 @@ function make_chicken(x,y)
 	})
 end
 
+function make_egg(x,y)
+	return make_enemy_obj("egg",x,y,{
+		width=28,
+		hp=225,
+		sprite=64,
+		points=2000,
+		angle=0,
+		boss=true,
+		spawn_count=0,
+		blink_timer=0,
+		move_timer=0,
+		angle=0,
+		update=function(self)
+			--count up blink timer
+			if(self.blink_timer>180)self.blink_timer=0
+			self.blink_timer+=1
+
+			--move forward then stop when in on the right side of the screen
+			if(self.x>104) self.x-=0.4
+
+     		--move up and down
+     		if(self.move_timer>900)self.move_timer=0
+     		self.move_timer+=1
+
+     		if(self.move_timer<300)self.y-=1 self.y=mid(34,self.y,94)
+     		if(self.move_timer>300 and self.move_timer<600)self.y+=1 self.y=mid(34,self.y,64)
+     		if(self.move_timer>600)self.y+=1 self.y=mid(34,self.y,94)
+
+			self:check_collision(self)
+
+			for i=0,1 do
+				self:shoot_player(self,flr(rnd(20)+10),8)
+			end
+
+			--spawn chickens
+			if (self.spawn_count>300) self.spawn_count=0
+			self.spawn_count+=1
+			if self.spawn_count==100 then
+				--spawn in a circle around boss
+				for i=1,6 do
+					self.angle+=60
+					make_chicken(self.x+20*cos(self.angle/360),self.y+20*sin(self.angle/360))
+				end
+			else
+				self.angle=0
+			end
+
+			self:despawn(self)
+		end,
+		draw=function(self)
+			outlined_sprites(self.sprite,8,self.x-12,self.y-16,3,4)
+
+			--blink
+			if(self.blink_timer>160+flr(rnd(25)))spr(83,self.x-12,self.y-8,2,1)
+
+			--show cracks
+
+		end
+	})
+end
+
 function make_enemy_bullet(x,y)
 	return make_enemy_obj("enemy_bullet",x,y,{
 		width=4,
@@ -1258,7 +1319,7 @@ function load_wave(wave)
 
 	if wave.eggs then
 		for egg in all(wave.eggs) do
-			--make_egg(egg[1],egg[2])
+			make_egg(egg[1],egg[2])
 		end
 	end
 end
