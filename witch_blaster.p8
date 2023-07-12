@@ -109,14 +109,6 @@ function _init()
 		double=false,
 		bullet_colour=7,
 		update=function(self)
-			--reset variables
-			self.down,self.up=false,false
-
-			--count down hit timer
-			if (self.hit_timer>0) self.hit_timer-=1 screen_shake(0.05)
-			--reset is_hit variable and camera
-			if (self.hit_timer<1) self.is_hit=false camera(0,0)
-
 			--count down powerup timer
 			self.powerup_timer-=1
 			self.powerup_timer=mid(0,self.powerup_timer,180)
@@ -126,6 +118,9 @@ function _init()
 
 			--reset powerup
 			if (self.powerup_timer<1) self.powerup=""
+
+			--reset movement variables
+			self.down,self.up=false,false
 
 			--movement
 			self.velocity_x*=0.85
@@ -206,22 +201,27 @@ function _init()
 			end
 
 			--collision
+			--count down hit timer
+			if (self.hit_timer>0) self.hit_timer-=1 screen_shake(0.05)
+			--reset is_hit variable and camera
+			if (self.hit_timer<1) self.is_hit=false camera(0,0)
+
 			--make player invulnerable when hit
 			if not self.is_hit then
 				self:check_collision(self)
 			end
 
-			--limit e_level
-			self.e_level=mid(0,self.e_level,116)
-
 			--contstantly drain players e_level
 			if not level_clear then
 				--slow down draining for tutorial
-				if (level==1 and level_timer<20) self.e_level-= 0.025 else self.e_level-=self.e_drain
+				if (level==1) self.e_level-= 0.025 else self.e_level-=self.e_drain
 			end
 
+			--limit e_level
+			self.e_level=mid(0,self.e_level,116)
+
 			--check if player has lost a life
-			if (self.e_level<1 and self.lives>0) self.x=25 self.y=64 self.lives-=1 self.e_level=116
+			if (self.e_level<1 and self.lives>0) self.x=25 self.y=64 self.lives-=1 self.e_level=116 self:hit_effect(self)
 
 			--check if player is dead
 			if (self.e_level<1 and self.lives<1) state="end"
@@ -234,17 +234,20 @@ function _init()
 			local enemy
 			for enemy in all(enemy_objs) do
 				if circles_overlapping(self,enemy) then
-					--hit effect
-					self.sprite=5
-					self.is_hit=true
-					self.hit_timer+=60
-					explosion(hit_particle,self.x-2,self.y-10)
-					sfx(1)
-
+					self:hit_effect(self)
 					--take damage
 					self.e_level-=20
 				end
 			end
+		end,
+		hit_effect=function(self)
+			--hit effect
+			self.sprite=5
+			self.is_hit=true
+			self.hit_timer+=60
+			explosion(hit_particle,self.x-2,self.y-10)
+			sfx(1)
+
 		end
 	}
 
@@ -521,7 +524,7 @@ function draw_game()
 
 	--powerup
 	--dont show powerup text during tutorial
-	if(not(level==1 and level_timer<30)) outlined_text(player.powerup,64-(#player.powerup*2)-1,12,7,1)
+	if(not level==1) outlined_text(player.powerup,64-(#player.powerup*2)-1,12,7,1)
 
 	--lives
 	outlined_text(player.lives,109,2,7,1)
@@ -559,15 +562,15 @@ function draw_game()
 
 	--tutorial text
 	if level==1 and not level_clear then
-		if(level_timer<5) outlined_text("⬇️⬆️⬅️➡️ to move",32,12,7,1) outlined_text("❎/x to shoot",38,20,7,1)
+		if(level_timer<6) outlined_text("⬇️⬆️⬅️➡️ to move",32,12,7,1) outlined_text("❎/x to shoot",38,20,7,1)
 
-		if(level_timer>5 and level_timer<10) outlined_text("your estrogen is",32,12,7,1) outlined_text("always draining",34,20,7,1) outlined_text("watch the bar below",28,28,7,1)
-		if(level_timer>10 and level_timer<15) outlined_text("you will lose a life",26,12,7,1) outlined_text("if it hits 0",40,20,7,1)
-		if(level_timer>15 and level_timer<20) outlined_text("enemies and pills",32,12,7,1) outlined_text("will fill it up",34,20,7,1)
+		if(level_timer>6 and level_timer<14) outlined_text("your estrogen is",32,12,7,1) outlined_text("always draining",34,20,7,1) outlined_text("watch the bar below",28,28,7,1)
+		if(level_timer>14 and level_timer<22) outlined_text("you will lose a life",26,12,7,1) outlined_text("when it is empty",36,20,7,1)
+		if(level_timer>22 and level_timer<29) outlined_text("enemies and pills",32,12,7,1) outlined_text("will fill it up",34,20,7,1)
 
-		if(level_timer>20 and level_timer<25) outlined_text("enemies drop pills,",28,12,7,1) outlined_text("magic, coins, and",30,20,7,1) outlined_text("random powerups",34,28,7,1)
+		if(level_timer>29 and level_timer<37) outlined_text("enemies drop pills,",28,12,7,1) outlined_text("magic, coins, and",30,20,7,1) outlined_text("random powerups",34,28,7,1)
 
-		if(level_timer>25 and level_timer<30) outlined_text("blast using 🅾️/z",32,12,7,1) outlined_text("when magic is at 100%",20,20,7,1)
+		if(level_timer>37 and level_timer<44) outlined_text("blast using 🅾️/z",32,12,7,1) outlined_text("when magic is at 100%",20,20,7,1)
 	end
 end
 
