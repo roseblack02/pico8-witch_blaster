@@ -583,8 +583,8 @@ function update_shop()
 	--buy options
 	if buying and btnp(4) then	
 		if(cursor.y==34 and player.coins>9 and e_upgrades<3) player.coins-=10 player.e_gained+=2.5 e_upgrades+=1 sfx(6)
-		if(cursor.y==42 and player.coins>14 and drain_upgrades<5) player.coins-=15 player.e_drain-=0.05 drain_upgrades+=1 sfx(6)
-		if(cursor.y==50 and player.coins>17 and dmg_upgrades<3) player.coins-=18 player.dmg+=0.5 dmg_upgrades+=1 sfx(6)
+		if(cursor.y==42 and player.coins>14 and drain_upgrades<5) player.coins-=15 player.e_drain-=0.02 drain_upgrades+=1 sfx(6)
+		if(cursor.y==50 and player.coins>17 and dmg_upgrades<5) player.coins-=18 player.dmg+=0.25 dmg_upgrades+=1 sfx(6)
 		if(cursor.y==58 and player.coins>19) player.coins-=20 player.lives+=1 sfx(6)
 		if(cursor.y==66 and player.coins>14 and blast_upgrades<5) player.coins-=15 player.blast_dur-=0.2 blast_upgrades+=1 sfx(6)
 		if(cursor.y==74) buying=false close=true sfx(5)
@@ -661,7 +661,7 @@ function draw_shop()
 
 		if(cursor.y==34) outlined_text("increase estrogen gained ",3,91,7,1) outlined_text("from enemies "..e_upgrades.."/3",3,99,7,1) outlined_text("🅾️ to purchase",3,107,7,1)
 		if(cursor.y==42) outlined_text("slows down the draining ",3,91,7,1) outlined_text("of estrogen "..drain_upgrades.."/5",3,99,7,1) outlined_text("🅾️ to purchase",3,107,7,1)
-		if(cursor.y==50) outlined_text("increase damage dealt "..dmg_upgrades.."/3",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
+		if(cursor.y==50) outlined_text("increase damage dealt "..dmg_upgrades.."/5",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
 		if(cursor.y==58) outlined_text("purchase extra lives ",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
 		if(cursor.y==66) outlined_text("increase blast duration "..blast_upgrades.."/3",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
 		if(cursor.y==74) outlined_text("leave shop",3,91,7,1) outlined_text("🅾️ to leave",3,99,7,1)
@@ -1200,7 +1200,7 @@ function reset_info()
 
 	--reset more stats if starting from intro screen
 	if state=="intro" then 
-		player.lives,player.dmg,player.mag_level,player.blast_dur,player.e_gained,player.e_drain=3,1,0,2,5,0.1
+		player.lives,player.dmg,player.mag_level,player.blast_dur,player.e_gained,player.e_drain=3,1,0,2,5,0.15
 		e_upgrades,drain_upgrades,dmg_upgrades,blast_upgrades,magic_upgrades=1,1,1,1
 	end
 
