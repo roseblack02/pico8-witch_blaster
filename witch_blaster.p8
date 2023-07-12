@@ -1038,7 +1038,10 @@ function make_egg(x,y)
 			if(self.blink_timer>160+flr(rnd(25)))spr(83,self.x-12,self.y-8,2,1)
 
 			--show cracks
-
+			if(self.hp<175)spr(99,self.x+4,self.y-8)
+			if(self.hp<125)spr(100,self.x-4,self.y-16)
+			if(self.hp<75)spr(115,self.x-12,self.y+8)
+			if(self.hp<25)spr(116,self.x-4,self.y+8)
 		end
 	})
 end
