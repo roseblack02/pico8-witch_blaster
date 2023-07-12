@@ -86,7 +86,7 @@ level6={wave1={owls={{215,64},{290,54},{290,74}},
 			}
 		}
 
-level7={wave1={eggs={{200,64}}
+level7={wave1={eggs={{150,64}}
 			},
 		wave2={
 			},
