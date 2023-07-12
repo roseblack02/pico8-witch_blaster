@@ -45,7 +45,6 @@ function _init()
 	--game
 	map_x,front_tree_x,back_tree_x=0,0,0
 	map_speed,front_speed,back_speed=0.35,0.6,0.4
-	blast_text=7
 	text_wave=0
 
 	--get level info from text file
@@ -56,6 +55,7 @@ function _init()
 	wave1,wave2,wave3=true,false,false
 	level_clear=false
 	boss_message={"get smoked b)","foe vanquished","enemy felled","foe smoked"}
+	death_colour={7,7}
 	message=1
 
 	--store
@@ -108,6 +108,7 @@ function _init()
 		burst=false,
 		double=false,
 		bullet_colour=7,
+		dead=false,
 		update=function(self)
 			--count down powerup timer
 			self.powerup_timer-=1
@@ -126,10 +127,15 @@ function _init()
 			self.velocity_x*=0.85
 			self.velocity_y*=0.85
 
-			if (btn(0)) self.velocity_x-=0.75
-			if (btn(1)) self.velocity_x+=0.75
-			if (btn(2)) self.velocity_y-=0.75 self.down=true
-			if (btn(3)) self.velocity_y+=0.75 self.up=true
+			if self.dead then
+				if(btnp(2)) option=1
+				if(btnp(3)) option=2
+			else
+				if (btn(0)) self.velocity_x-=0.75
+				if (btn(1)) self.velocity_x+=0.75
+				if (btn(2)) self.velocity_y-=0.75 self.down=true
+				if (btn(3)) self.velocity_y+=0.75 self.up=true
+			end
 
 			self.velocity_x=mid(-2,self.velocity_x,2)
 			self.velocity_y=mid(-2,self.velocity_y,2)
@@ -143,7 +149,7 @@ function _init()
 			self.y=mid(10,self.y,120)
 
 			--bullet
-			if btnp(5) and not self.blast then
+			if btnp(5) and not self.blast and not self.dead then
 				if (self.double) make_bullet_obj(self.x,self.y-4,self.shot_speed+self.shot_speed_mod,{false,true,false,false}) make_bullet_obj(self.x,self.y+4,self.shot_speed+self.shot_speed_mod,{false,true,false,false}) else make_bullet_obj(self.x,self.y,self.shot_speed+self.shot_speed_mod,{false,true,false,false})
 				sfx(2)
 			end
@@ -155,6 +161,9 @@ function _init()
 					level_clear=false
 					sfx(5)
 					if(music_on=="on")music(0)
+				elseif self.dead then
+					if(option==1)state="menu"
+					if(option==2)state="shop" close=true open=false
 				else
 					--blast
 					if (self.mag_level==100) self.blast=true explosion(blast_particle,self.x+2,self.y-10) sfx(3)
@@ -207,7 +216,7 @@ function _init()
 			if (self.hit_timer<1) self.is_hit=false camera(0,0)
 
 			--make player invulnerable when hit
-			if not self.is_hit then
+			if not self.is_hit and not self.dead then
 				self:check_collision(self)
 			end
 
@@ -224,10 +233,10 @@ function _init()
 			if (self.e_level<1 and self.lives>0) self.x=25 self.y=64 self.lives-=1 self.e_level=116 self:hit_effect(self)
 
 			--check if player is dead
-			if (self.e_level<1 and self.lives<1) state="end"
+			if (self.e_level<1 and self.lives<1) self.dead=true 
 		end,
 		draw=function(self)
-			outlined_sprites(self.sprite,12,self.x-8,self.y-8,2,2)
+			if (not self.dead)outlined_sprites(self.sprite,12,self.x-8,self.y-8,2,2)
 		end,
 		check_collision=function(self)
 			--enemy collision
@@ -466,12 +475,16 @@ function update_game()
 	if (text_wave>59) text_wave=0
 	text_wave+=1
 
-	--flash text
-	if frame>30 then
-		blast_text=7
-	else
-		blast_text=12
+	--death menu
+	--flash button prompts
+	if(frame>30) text_flash=7 else text_flash=12
+
+	--change menu option colour if player has selected it
+	for c=1,#death_colour do
+		death_colour[c]=7
 	end
+
+	menu_colour[option]=12
 end
 
 function draw_game()
@@ -517,14 +530,14 @@ function draw_game()
 	outlined_text("★ "..player.mag_level.."%",2,2,7,1)
 
 	--blast prompt
-	if (player.mag_level==100) outlined_text("blast 🅾️",48,112,blast_text,1)
+	if (player.mag_level==100) outlined_text("blast 🅾️",48,112,text_flash,1)
 
 	--score
 	outlined_text(player.points,64-(#tostr(player.points)*2)-1,2,7,1)
 
 	--powerup
 	--dont show powerup text during tutorial
-	if(not level==1) outlined_text(player.powerup,64-(#player.powerup*2)-1,12,7,1)
+	if(level>1) outlined_text(player.powerup,64-(#player.powerup*2)-1,12,7,1)
 
 	--lives
 	outlined_text(player.lives,109,2,7,1)
@@ -557,7 +570,22 @@ function draw_game()
 		rectfill(36,53,91,73,14)
 		outlined_text("score : ",40,56,7,1)
 		outlined_text(player.points,72,56,12,1)
-		outlined_text("continue 🅾️",42,66,blast_text,1)
+		outlined_text("continue 🅾️",42,66,text_flash,1)
+	end
+
+	--death screen
+	if player.dead then
+		waving_text("you died",45,40,7,1)
+		rectfill(35,52,92,84,1)
+		rectfill(36,53,91,83,14)
+		outlined_text("score : ",40,56,7,1)
+		outlined_text(player.points,72,56,12,1)
+		outlined_text("menu",56,66,death_colour[1],1)
+		outlined_text("replay",52,76,death_colour[2],1)
+
+		--button prompts
+		if(option==1) outlined_text("🅾️",76,66,text_flash,1)
+		if(option==2) outlined_text("🅾️",80,76,text_flash,1)
 	end
 
 	--tutorial text
@@ -1263,7 +1291,7 @@ function reset_info()
 	remove(bullet_objs)
 
 	--reset player position, points, and powerup for next level
-	player.x,player.y,player.powerup,player.points,player.e_level=25,64,"",0,116
+	player.x,player.y,player.powerup,player.points,player.e_level,player.dead=25,64,"",0,116,false
 
 	--reset more stats if starting from intro screen
 	if state=="intro" then 
