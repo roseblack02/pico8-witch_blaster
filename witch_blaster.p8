@@ -109,15 +109,18 @@ function _init()
 		shot_speed_mod=0,
 		burst=false,
 		double=false,
+		shield=false,
 		bullet_colour=7,
 		dead=false,
 		update=function(self)
 			--count down powerup timer
 			self.powerup_timer-=1
-			self.powerup_timer=mid(0,self.powerup_timer,180)
+			self.powerup_timer=mid(0,self.powerup_timer,300)
 
 			if (self.powerup=="shot speed up") self.shot_speed_mod=4 else self.shot_speed_mod=0
 			if (self.powerup=="double shot") self.double=true else self.double=false
+			if (self.powerup=="burst") self.burst=true else self.burst=false
+			if (self.powerup=="shield") self.shield=true else self.shield=false
 
 			--reset powerup
 			if (self.powerup_timer<1) self.powerup=""
@@ -183,7 +186,7 @@ function _init()
 				make_bullet_obj(self.x,self.y,self.shot_speed+self.shot_speed_mod,{false,true,true,false})
 				make_bullet_obj(self.x,self.y,self.shot_speed+self.shot_speed_mod,{false,false,true,true})
 				make_bullet_obj(self.x,self.y,self.shot_speed+self.shot_speed_mod,{true,false,false,true})
-				self.burst=false
+				self.powerup=""
 				sfx(2)
 			end
 
@@ -231,12 +234,21 @@ function _init()
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,12,self.x-8,self.y-8,2,2)
+
+			--shield
+			if self.shield then
+				circ(self.x,self.y-1,10,12)
+				circ(self.x+1,self.y,10,12)
+				circ(self.x,self.y+1,10,12)
+				circ(self.x-1,self.y,10,12)
+				circ(self.x,self.y,10,7)
+			end
 		end,
 		check_collision=function(self)
 			--enemy collision
 			local enemy
 			for enemy in all(enemy_objs) do
-				if circles_overlapping(self,enemy) then
+				if circles_overlapping(self,enemy) and not self.shield then
 					self:hit_effect(self)
 					--take damage
 					self.e_level-=20
@@ -1206,16 +1218,12 @@ function make_powerup(x,y)
 			self:despawn(self)
 
 			--player pickup
-			if circles_overlapping(self,player) then
+			if circles_overlapping(self,player) and player.powerup=="" then
 				--add to powerup timer
-				player.powerup_timer+=180
+				player.powerup_timer=300
 
 				--select random powerup
-				local rand=flr(rnd(3))+1
-
-				if (rand==1) player.powerup="shot speed up"
-				if (rand==2) player.powerup="double shot"
-				if (rand==3) player.burst=true
+				player.powerup=rnd({"shot speed up","double shot","burst","shield"})
 
 				sfx(4)
 
@@ -1255,7 +1263,6 @@ function make_magic(x,y)
 		end
 	})
 end
-
 
 --iterates through an object of a specified type and call a specified function
 function for_each_object(type,name,callback)
