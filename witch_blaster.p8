@@ -4,12 +4,13 @@ __lua__
 --main tab
 
 --[[todo
-	death screen
+	maybe an extra level or 2?
 
-	make 7 levels (4 and 7 are bosses)
-	make boss enemies (egg) (wizard)
+	fix 
 
 	refine tutorial level
+
+	sfx for buttons
 
 	game music
 	shop music
@@ -50,7 +51,7 @@ function _init()
 	--get level info from text file
 	#include levels.lua
 	levels={level1,level2,level3,level4,level5,level6,level7}
-	level=7
+	level=1
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
 	level_clear=false
@@ -127,15 +128,10 @@ function _init()
 			self.velocity_x*=0.85
 			self.velocity_y*=0.85
 
-			if self.dead then
-				if(btnp(2)) option=1
-				if(btnp(3)) option=2
-			else
-				if (btn(0)) self.velocity_x-=0.75
-				if (btn(1)) self.velocity_x+=0.75
-				if (btn(2)) self.velocity_y-=0.75 self.down=true
-				if (btn(3)) self.velocity_y+=0.75 self.up=true
-			end
+			if (btn(0)) self.velocity_x-=0.75
+			if (btn(1)) self.velocity_x+=0.75
+			if (btn(2)) self.velocity_y-=0.75 self.down=true
+			if (btn(3)) self.velocity_y+=0.75 self.up=true
 
 			self.velocity_x=mid(-2,self.velocity_x,2)
 			self.velocity_y=mid(-2,self.velocity_y,2)
@@ -161,9 +157,6 @@ function _init()
 					level_clear=false
 					sfx(5)
 					if(music_on=="on")music(0)
-				elseif self.dead then
-					if(option==1)state="menu"
-					if(option==2)state="shop" close=true open=false
 				else
 					--blast
 					if (self.mag_level==100) self.blast=true explosion(blast_particle,self.x+2,self.y-10) sfx(3)
@@ -236,7 +229,7 @@ function _init()
 			if (self.e_level<1 and self.lives<1) self.dead=true 
 		end,
 		draw=function(self)
-			if (not self.dead)outlined_sprites(self.sprite,12,self.x-8,self.y-8,2,2)
+			outlined_sprites(self.sprite,12,self.x-8,self.y-8,2,2)
 		end,
 		check_collision=function(self)
 			--enemy collision
@@ -434,7 +427,8 @@ function update_game()
 	for pickup in all(pickup_objs)do
 		pickup:update()
 	end
-	player:update()
+
+	if(not player.dead)player:update()
 
 	--side scrolling
 	map_x+=map_speed
@@ -467,8 +461,22 @@ function update_game()
 		--end level based on timer and on if there are no enemies
 		elseif level_timer>30 and #enemy_objs<1 then
 			level_clear=true
-			level_timer=0
 		end 
+	end
+
+	--controls for death screen
+	if player.dead then
+		if(btnp(2)) option=1
+		if(btnp(3)) option=2
+
+		if btnp(4) then
+			if option==1 then 
+				state="menu"
+				if(music_on=="on")music(0)
+			end
+
+			if(option==2)reset_info()
+		end
 	end
 
 	--wave text counter
@@ -519,7 +527,8 @@ function draw_game()
 	for pickup in all(pickup_objs)do
 		pickup:draw()
 	end
-	player:draw()
+
+	if(not player.dead)player:draw()
 
 	--explosions
 	draw_explosion(hit_particle,{7,8,8,2})
@@ -621,9 +630,9 @@ function update_shop()
 		if(cursor.y==74) buying=false close=true sfx(5)
 	end
 
-	--leavinf dialogue
+	--leaving dialogue
 	if close and btnp(5) then
-		close,open,wave1=false,true,true
+		close,open=false,true
 		level+=1 
 		sfx(5) 
 		reset_info() 
@@ -1290,8 +1299,15 @@ function reset_info()
 	--remove old bullets
 	remove(bullet_objs)
 
+	--remove old enemies
+	remove(enemy_objs)
+
+	--reset level info
+	level_timer=0
+	level_clear,wave1=false,true
+
 	--reset player position, points, and powerup for next level
-	player.x,player.y,player.powerup,player.points,player.e_level,player.dead=25,64,"",0,116,false
+	player.x,player.y,player.powerup,player.points,player.e_level,player.dead,player.hit_timer=25,64,"",0,116,false,0
 
 	--reset more stats if starting from intro screen
 	if state=="intro" then 
@@ -1557,10 +1573,10 @@ function leaves(x,y,width,colour)
 end
 
 function static_background()
-	back_trees(back_tree_x)
-	front_trees(front_tree_x)
+	back_trees(0)
+	front_trees(0)
 	rectfill(0,96,128,128,3)
-	map(map_x,0)
+	map(0,0)
 end
 __gfx__
 00000000000000001110000000000000000000000000000077700000000000000000000000000000011111000000000000000000111100000000000000000000
