@@ -6,9 +6,10 @@ __lua__
 --[[todo
 	maybe an extra level or 2? 
 
-	fix egg blink stuttering
-
 	refine tutorial level
+	refine eg boss level
+
+	add shield powerup
 
 	sfx for buttons
 
@@ -51,7 +52,7 @@ function _init()
 	--get level info from text file
 	#include levels.lua
 	levels={level1,level2,level3,level4,level5,level6,level7}
-	level=7
+	level=1
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
 	level_clear=false
@@ -623,7 +624,7 @@ function update_shop()
 	--buy options
 	if buying and btnp(4) then	
 		if(cursor.y==34 and player.coins>9 and e_upgrades<3) player.coins-=10 player.e_gained+=2.5 e_upgrades+=1 sfx(6)
-		if(cursor.y==42 and player.coins>14 and drain_upgrades<5) player.coins-=15 player.e_drain-=0.02 drain_upgrades+=1 sfx(6)
+		if(cursor.y==42 and player.coins>14 and drain_upgrades<5) player.coins-=15 player.e_drain-=0.025 drain_upgrades+=1 sfx(6)
 		if(cursor.y==50 and player.coins>17 and dmg_upgrades<5) player.coins-=18 player.dmg+=0.25 dmg_upgrades+=1 sfx(6)
 		if(cursor.y==58 and player.coins>19) player.coins-=20 player.lives+=1 sfx(6)
 		if(cursor.y==66 and player.coins>14 and blast_upgrades<5) player.coins-=15 player.blast_dur-=0.2 blast_upgrades+=1 sfx(6)
@@ -1022,7 +1023,7 @@ end
 function make_egg(x,y)
 	return make_enemy_obj("egg",x,y,{
 		width=28,
-		hp=225,
+		hp=260,
 		sprite=64,
 		points=2000,
 		angle=0,
