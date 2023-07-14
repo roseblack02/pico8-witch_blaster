@@ -4,9 +4,9 @@ __lua__
 --main tab
 
 --[[todo
-	maybe an extra level or 2?
+	maybe an extra level or 2? 
 
-	fix 
+	fix egg blink stuttering
 
 	refine tutorial level
 
@@ -51,7 +51,7 @@ function _init()
 	--get level info from text file
 	#include levels.lua
 	levels={level1,level2,level3,level4,level5,level6,level7}
-	level=1
+	level=7
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
 	level_clear=false
@@ -1028,14 +1028,9 @@ function make_egg(x,y)
 		angle=0,
 		boss=true,
 		spawn_count=0,
-		blink_timer=0,
 		move_timer=0,
 		angle=0,
 		update=function(self)
-			--count up blink timer
-			if(self.blink_timer>180)self.blink_timer=0
-			self.blink_timer+=1
-
 			--move forward then stop when in on the right side of the screen
 			if(self.x>104) self.x-=0.4
 
@@ -1050,7 +1045,7 @@ function make_egg(x,y)
 			self:check_collision(self)
 
 			for i=0,1 do
-				self:shoot_player(self,flr(rnd(20)+10),8)
+				self:shoot_player(self,0,8)
 			end
 
 			--spawn chickens
@@ -1072,7 +1067,7 @@ function make_egg(x,y)
 			outlined_sprites(self.sprite,8,self.x-12,self.y-16,3,4)
 
 			--blink
-			if(self.blink_timer>160+flr(rnd(25)))spr(83,self.x-12,self.y-8,2,1)
+			if(self.spawn_count>70 and self.spawn_count<100)spr(83,self.x-12,self.y-8,2,1)
 
 			--show cracks
 			if(self.hp<175)spr(99,self.x+4,self.y-8)
