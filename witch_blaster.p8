@@ -9,8 +9,6 @@ __lua__
 	refine tutorial level
 	refine egg boss level
 
-	sfx for buttons
-
 	game music
 	shop music
 	at least 1 boss song ideally 2
@@ -677,11 +675,14 @@ function draw_shop()
 	--stand
 	rectfill(4,20,12,88,4)
 	rect(3,20,13,88,1)
+	circfill(8,28,4,2)
 
 	rectfill(116,20,124,88,4)
 	rect(115,20,125,88,1)
+	circfill(120,28,4,2)
 
 	rectfill(0,87,128,128,4)
+	rectfill(0,87,128,90,2)
 	line(0,87,128,87,1)
 	--tent stripes
 	--outline
