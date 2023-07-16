@@ -10,7 +10,6 @@ __lua__
 	refine egg boss level
 
 	game music
-	shop music
 	at least 1 boss song ideally 2
 
 	make little ending animation (say something frickin cool like "get smoked babee B)")
@@ -156,7 +155,7 @@ function _init()
 					state="shop"
 					level_clear=false
 					sfx(5)
-					if(music_on=="on")music(0)
+					if(music_on=="on")music(2)
 				else
 					--blast
 					if (self.mag_level==100) self.blast=true explosion(blast_particle,self.x+2,self.y-10) sfx(3)
@@ -395,7 +394,7 @@ function update_intro()
     --start game
     if intro_state>2 then
     	reset_info() 
-    	if(music_on=="on")music(2,0,7)
+    	if(music_on=="on")music(-1,0,7)
     end
 end
 
@@ -648,7 +647,7 @@ function update_shop()
 		level+=1 
 		sfx(5) 
 		reset_info() 
-		if(music_on=="on")music(2,0,7)
+		if(music_on=="on")music(-1,0,7)
 	end
 
 	--move cursor
@@ -1761,9 +1760,9 @@ __music__
 01 0a0b0c10
 02 0d0e0f11
 01 12131459
-00 15161759
+00 18191a59
 00 12131459
-02 18191a59
-00 5b585b59
+02 15161759
+00 55565759
 00 55535659
 
