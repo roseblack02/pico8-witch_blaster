@@ -25,7 +25,7 @@ __lua__
 function _init()
 	state="menu"
 	frame=0
-	music(0)
+	music(2)
 	--menu
 	witch_y,blaster_x=-20,-100
 	game_pal="normal"
@@ -47,7 +47,7 @@ function _init()
 	--get level info from text file
 	#include levels.lua
 	levels={level1,level2,level3,level4,level5,level6,level7}
-	level=4
+	level=1
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
 	level_clear=false
@@ -154,7 +154,7 @@ function _init()
 					state="shop"
 					level_clear=false
 					sfx(5)
-					if(music_on=="on")music(2)
+					if(music_on=="on")music(0)
 				else
 					--blast
 					if (self.mag_level==100) self.blast=true explosion(blast_particle,self.x+2,self.y-10) sfx(3)
@@ -325,7 +325,7 @@ function update_menu()
 
 	if option==2 then
 		if btnp(1) or btnp(0) then
-			if(music_on=="on") music_on="off" music(-1) else music_on="on" music(0)
+			if(music_on=="on") music_on="off" music(-1) else music_on="on" music(2)
 			sfx(8)
 		end
 	end
@@ -481,7 +481,7 @@ function update_game()
 		if btnp(4) then
 			if option==1 then 
 				state="menu"
-				if(music_on=="on")music(0)
+				if(music_on=="on")music(2)
 				sfx(8)
 			end
 
@@ -525,6 +525,11 @@ function draw_game()
 	draw_trail(7)
 
 	--draw objects
+	local pickup
+	for pickup in all(pickup_objs)do
+		pickup:draw()
+	end
+	if(not player.dead)player:draw()
 	local enemy
 	for enemy in all(enemy_objs)do
 		enemy:draw()
@@ -533,12 +538,6 @@ function draw_game()
 	for bullet in all(bullet_objs)do
 		bullet:draw()
 	end
-	local pickup
-	for pickup in all(pickup_objs)do
-		pickup:draw()
-	end
-
-	if(not player.dead)player:draw()
 
 	--explosions
 	draw_explosion(hit_particle,{7,8,8,2})
@@ -636,7 +635,7 @@ function update_shop()
 		if(cursor.y==42 and player.coins>14 and drain_upgrades<5) player.coins-=15 player.e_drain-=0.025 drain_upgrades+=1 sfx(6)
 		if(cursor.y==50 and player.coins>17 and dmg_upgrades<5) player.coins-=18 player.dmg+=0.25 dmg_upgrades+=1 sfx(6)
 		if(cursor.y==58 and player.coins>19) player.coins-=20 player.lives+=1 sfx(6)
-		if(cursor.y==66 and player.coins>14 and blast_upgrades<5) player.coins-=15 player.blast_dur-=0.2 blast_upgrades+=1 sfx(6)
+		if(cursor.y==66 and player.coins>14 and blast_upgrades<3) player.coins-=15 player.blast_dur-=0.2 blast_upgrades+=1 sfx(6)
 		if(cursor.y==74) buying=false close=true sfx(5)
 	end
 
