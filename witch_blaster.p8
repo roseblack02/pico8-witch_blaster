@@ -10,7 +10,6 @@ __lua__
 	refine egg boss level
 
 	game music
-	shop music
 	at least 1 boss song ideally 2
 
 	make little ending animation (say something frickin cool like "get smoked babee B)")
@@ -48,13 +47,12 @@ function _init()
 	--get level info from text file
 	#include levels.lua
 	levels={level1,level2,level3,level4,level5,level6,level7}
-	level=1
+	level=4
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
 	level_clear=false
-	boss_message={"get smoked b)","foe vanquished","enemy felled","foe smoked"}
 	death_colour={7,7}
-	message=1
+	message=""
 
 	--store
 	blink_timer=0
@@ -548,7 +546,7 @@ function draw_game()
 
 	--hud
 	--mag level
-	outlined_text("★ "..player.mag_level.."%",2,2,7,1)
+	outlined_text("★ "..flr(player.mag_level).."%",2,2,7,1)
 
 	--blast prompt
 	if (player.mag_level==100) outlined_text("blast 🅾️",48,112,text_flash,1)
@@ -586,7 +584,7 @@ function draw_game()
 	--level clear screen
 	if level_clear then
 		--display level cleared or special boss cleared message
-		if(level==4 or level==7) waving_text(boss_message[message],61-((#boss_message[message])*2),40,7,1) else waving_text("level cleared!",33,40,7,1)
+		if(level==4 or level==7) waving_text(message,61-((#message)*2),40,7,1) else waving_text("level cleared!",33,40,7,1)
 		rectfill(35,52,92,74,1)
 		rectfill(36,53,91,73,14)
 		outlined_text("score : ",40,56,7,1)
@@ -799,7 +797,7 @@ function make_enemy_obj(name,x,y,props)
 						player.e_level+=player.e_gained
 
 						--check if boss and give coins and randomly choose a message for player to say
-						if (self.boss) player.coins+=20 message=flr(rnd(3))+1
+						if (self.boss) player.coins+=20 message=rnd({"get smoked b)","foe vanquished","enemy felled","foe smoked"})
 					end
 				else
 					self.is_hit=false
@@ -999,9 +997,9 @@ function make_wizard(x,y)
 			end
 
 			--spawn flies at top and bottom of screen
-			if (self.spawn_count>180) self.spawn_count=0
+			if (self.spawn_count>100) self.spawn_count=0
 			self.spawn_count+=1
-			if(self.spawn_count==180) make_fly(138,14) make_fly(138,94)
+			if(self.spawn_count==100) make_fly(138,14) make_fly(138,94)
 
 			trail(self.x-10,self.y-6,{false,false,false,true})
 
