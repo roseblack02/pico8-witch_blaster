@@ -54,6 +54,9 @@ function _init()
 	death_colour={7,7}
 	message=""
 
+	--tutorial info
+	pause,tutorial_state,tutorial_text=false,1,{{"⬇️⬆️⬅️➡️ to move","❎/x to shoot","🅾️/z to continue"},{"your estrogen is","always draining","watch the bar below","enemies and pills fill it up","🅾️/z to continue"},{"enemies drop pills,","magic, coins, and","random powerups","🅾️/z to continue"},{"blast using 🅾️/z","when magic is at 100%","🅾️/z to continue"}}
+
 	--store
 	blink_timer=0
 	open,buying,close=true,false,false
@@ -424,20 +427,23 @@ end
 
 function update_game()
 	--update objects
-	local enemy
-	for enemy in all(enemy_objs)do
-		enemy:update()
-	end
-	local bullet
-	for bullet in all(bullet_objs)do
-		bullet:update()
-	end
-	local pickup
-	for pickup in all(pickup_objs)do
-		pickup:update()
-	end
+	--dont update if paused during tutorial
+	if not pause then
+		local enemy
+		for enemy in all(enemy_objs)do
+			enemy:update()
+		end
+		local bullet
+		for bullet in all(bullet_objs)do
+			bullet:update()
+		end
+		local pickup
+		for pickup in all(pickup_objs)do
+			pickup:update()
+		end
 
-	if(not player.dead)player:update()
+		if(not player.dead)player:update()
+	end
 
 	--side scrolling
 	map_x+=map_speed
@@ -447,11 +453,19 @@ function update_game()
 	front_tree_x-=front_speed
 	if (front_tree_x<-127) front_tree_x=0
 
+	--tutorial
+	if level==1 then
+		--pause game and set which tutorial text to display
+		if(level_timer==0 or (level_timer>9 and level_timer<9+(1/60)) or (level_timer>22 and level_timer<22+(1/60)) or (level_timer>39 and level_timer<39+(1/60))) pause=true
+
+		if(pause and btnp(4)) pause=false tutorial_state+=1
+	end
+
 	--load waves
 	--load wave based on timer
 	if not level_clear then
 		--count level timer
-		level_timer+=(1/60)
+		if(not pause)level_timer+=(1/60)
 
 		if level_timer<15 and wave1 then
 			--spawn
@@ -473,6 +487,10 @@ function update_game()
 		end 
 	end
 
+	--wave text counter
+	if (text_wave>59) text_wave=0
+	text_wave+=1
+
 	--controls for death screen
 	if player.dead then
 		if(btnp(2)) option=1
@@ -488,10 +506,6 @@ function update_game()
 			if(option==2)reset_info()
 		end
 	end
-
-	--wave text counter
-	if (text_wave>59) text_wave=0
-	text_wave+=1
 
 	--death menu
 	--flash button prompts
@@ -555,7 +569,7 @@ function draw_game()
 
 	--powerup
 	--dont show powerup text during tutorial
-	if(level>1) outlined_text(player.powerup,64-(#player.powerup*2)-1,12,7,1)
+	if(level>1) outlined_text(player.powerup,63-(#player.powerup*2),12,7,1)
 
 	--lives
 	outlined_text(player.lives,109,2,7,1)
@@ -608,7 +622,7 @@ function draw_game()
 
 	--tutorial text
 	if level==1 and not level_clear then
-		if(level_timer<6) outlined_text("⬇️⬆️⬅️➡️ to move",32,12,7,1) outlined_text("❎/x to shoot",38,20,7,1)
+		--[[if(level_timer<6) outlined_text("⬇️⬆️⬅️➡️ to move",32,12,7,1) outlined_text("❎/x to shoot",38,20,7,1)
 
 		if(level_timer>6 and level_timer<14) outlined_text("your estrogen is",32,12,7,1) outlined_text("always draining",34,20,7,1) outlined_text("watch the bar below",28,28,7,1)
 		if(level_timer>14 and level_timer<22) outlined_text("you will lose a life",26,12,7,1) outlined_text("when it is empty",36,20,7,1)
@@ -616,7 +630,17 @@ function draw_game()
 
 		if(level_timer>29 and level_timer<37) outlined_text("enemies drop pills,",28,12,7,1) outlined_text("magic, coins, and",30,20,7,1) outlined_text("random powerups",34,28,7,1)
 
-		if(level_timer>37 and level_timer<44) outlined_text("blast using 🅾️/z",32,12,7,1) outlined_text("when magic is at 100%",20,20,7,1)
+		if(level_timer>37 and level_timer<44) outlined_text("blast using 🅾️/z",32,12,7,1) outlined_text("when magic is at 100%",20,20,7,1)]]--
+	end
+
+	if pause then
+		--loop through lines of tutorial text and display them
+		for i=1,#tutorial_text[tutorial_state] do
+			--offset used due to multiple symbols in the first line of the first text
+			local offset=0
+			if(i==1 and tutorial_state==1) offset=6 else offset=0
+			outlined_text(tutorial_text[tutorial_state][i],63-offset-(#tutorial_text[tutorial_state][i]*2),4+i*8,7,1)
+		end
 	end
 end
 
