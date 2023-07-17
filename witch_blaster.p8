@@ -631,8 +631,8 @@ function draw_game()
 		end
 
 		--arrows
-		--use sspr
 		if(tutorial_state==2)sspr(56,0,16,16,48,85,32,32)
+		if(tutorial_state==4)spr(7,1,10,2,2,false,true)
 	end
 end
 
