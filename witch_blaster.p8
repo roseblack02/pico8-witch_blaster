@@ -5,17 +5,18 @@ __lua__
 
 --[[todo
 	maybe an extra level or 2? 
-
+	
 	refine tutorial level
 	refine egg boss level
-
+	
 	game music
+	end screen music
 	at least 1 boss song ideally 2
-
+	
 	make little ending animation (say something frickin cool like "get smoked babee B)")
-
+	
 	make intro animation with story text (say somthin like "i need to ice that fool >:(")
-
+	
 	refine enemies
 	refine movement
 	refine sprites
@@ -34,6 +35,9 @@ function _init()
 	menu_colour={7,7,7}
 	text_flash=7
 
+	--cheats for testing
+	test_cheats=false
+
 	--intro
 	intro_x,intro_y=32,64
 	intro_angle=0
@@ -47,7 +51,7 @@ function _init()
 	--get level info from text file
 	#include levels.lua
 	levels={level1,level2,level3,level4,level5,level6,level7}
-	level=1
+	level=7
 	level_timer=0
 	wave1,wave2,wave3=true,false,false
 	level_clear=false
@@ -56,6 +60,10 @@ function _init()
 
 	--tutorial info
 	pause,tutorial_state,tutorial_text=false,1,{{"⬇️⬆️⬅️➡️ to move","❎/x to shoot","🅾️/z to continue"},{"your estrogen is","always draining","watch the bar below","enemies and pills fill it up","🅾️/z to continue"},{"enemies drop pills,","magic, coins, and","random powerups","🅾️/z to continue"},{"blast using 🅾️/z","when magic is at 100%","🅾️/z to continue"}}
+
+	--final boss animation
+	boss_dead=false
+	circle_size=0
 
 	--store
 	blink_timer=0
@@ -340,6 +348,9 @@ function update_menu()
 		end
 	end
 
+	--enable cheats
+	if(btnp(0) and btnp(1) and not test_cheats) test_cheats=true sfx(6)
+
 	--flash button prompts
 	if(frame>30) text_flash=7 else text_flash=12
 
@@ -442,7 +453,7 @@ function update_game()
 			pickup:update()
 		end
 
-		if(not player.dead)player:update()
+		if(not player.dead and not boss_dead)player:update()
 	end
 
 	--side scrolling
@@ -634,6 +645,11 @@ function draw_game()
 		if(tutorial_state==2)sspr(56,0,16,16,48,85,32,32)
 		if(tutorial_state==4)spr(7,1,10,2,2,false,true)
 	end
+
+	--final boss animation
+	if boss_dead then
+		circfill(104,64,circle_size,7)
+	end
 end
 
 function update_shop()
@@ -755,7 +771,7 @@ function update_end()
 end
 
 function draw_end()
-
+	cls(7)
 end
 -->8
 --objects
@@ -797,7 +813,7 @@ function make_enemy_obj(name,x,y,props)
 					del(bullet_objs,bullet)
 
 					--delete self if dead
-					if self.hp<1 then 
+					if self.hp<1 and not self.final_boss then 
 						del(enemy_objs,self) 
 						player.points+=self.points
 						--randomly drop a pickup
@@ -1055,41 +1071,61 @@ function make_egg(x,y)
 		points=2000,
 		angle=0,
 		boss=true,
+		final_boss=true,
 		spawn_count=0,
 		move_timer=0,
 		angle=0,
 		update=function(self)
-			--move forward then stop when in on the right side of the screen
-			if(self.x>104) self.x-=0.4
+			if not boss_dead then
+				--move forward then stop when in on the right side of the screen
+				if(self.x>104) self.x-=0.4
 
-     		--move up and down
-     		if(self.move_timer>900)self.move_timer=0
-     		self.move_timer+=1
+	     		--move up and down
+	     		if(self.move_timer>900)self.move_timer=0
+	     		self.move_timer+=1
 
-     		if(self.move_timer<300)self.y-=1 self.y=mid(34,self.y,94)
-     		if(self.move_timer>300 and self.move_timer<600)self.y+=1 self.y=mid(34,self.y,64)
-     		if(self.move_timer>600)self.y+=1 self.y=mid(34,self.y,94)
+	     		if(self.move_timer<300)self.y-=1 self.y=mid(34,self.y,94)
+	     		if(self.move_timer>300 and self.move_timer<600)self.y+=1 self.y=mid(34,self.y,64)
+	     		if(self.move_timer>600)self.y+=1 self.y=mid(34,self.y,94)
 
-			self:check_collision(self)
+				for i=0,1 do
+					self:shoot_player(self,0,8)
+				end
 
-			for i=0,1 do
-				self:shoot_player(self,0,8)
-			end
+				--spawn chickens
+				if (self.spawn_count>300) self.spawn_count=0
+				self.spawn_count+=1
+				if self.spawn_count==100 then
+					--spawn in a circle around boss
+					for i=1,6 do
+						self.angle+=60
+						make_chicken(self.x+20*cos(self.angle/360),self.y+20*sin(self.angle/360))
+					end
+				else
+					self.angle=0
+				end
 
-			--spawn chickens
-			if (self.spawn_count>300) self.spawn_count=0
-			self.spawn_count+=1
-			if self.spawn_count==100 then
-				--spawn in a circle around boss
-				for i=1,6 do
-					self.angle+=60
-					make_chicken(self.x+20*cos(self.angle/360),self.y+20*sin(self.angle/360))
+				self:despawn(self)
+				self:check_collision(self)
+
+				--death animation
+				if self.hp<1 then
+					boss_dead=true
 				end
 			else
-				self.angle=0
-			end
+				--stop music
+				music(-1)
 
-			self:despawn(self)
+				--move boss to center
+				if(self.y<64)self.y+=0.5
+				if(self.y>64)self.y-=0.5
+
+				--grow circle
+				if(self.y==64)circle_size+=0.5 circle_size=mid(0,circle_size,128,7) sfx(9)
+
+				--screen shake when circle is growing then stop and go to end state
+				if(circle_size>126)del(enemy_objs,self) camera(0,0) state="end" music(2) else screen_shake(0.05) 
+			end
 		end,
 		draw=function(self)
 			outlined_sprites(self.sprite,8,self.x-12,self.y-16,3,4)
@@ -1332,6 +1368,9 @@ function reset_info()
 		player.lives,player.dmg,player.mag_level,player.blast_dur,player.e_gained,player.e_drain=3,1,0,2,5,0.15
 		e_upgrades,drain_upgrades,dmg_upgrades,blast_upgrades,magic_upgrades=1,1,1,1
 	end
+
+	--test cheats
+	if (test_cheats) player.e_drain=0 player.dmg=10
 
 	--change to game
 	state="game" 
@@ -1752,7 +1791,7 @@ __sfx__
 110500000f55015550195500050022550285502e55000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 01030000195531e5501f55000000255532a5502b55000000255532a5502b55000000195531e5501f55000000195531e5501f55000000255532a5502b55000000195531e5501f55000000255002b5000000000000
 000400000a5530d550115501655000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+070c000009650086500b6500b65008600086000860004600036000860009600086000760000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 191000000c1500c1500c1500c1400c1400c1400c1300c1300c1300c1200c1200c1200c1100c1150c1000c1000e1500e1500e1500e1400e1400e1400e1300e1300e1300e1200e1200e1200e1100e1150c1000c100
 191000001b5501b5501b5501b5401b5401b5401b5301b5301b5301b5201b5201b5201b5101b51518000180001d5501d5501d5501d5401d5401d5401d5301d5301d5301d5201d5201d5201d5101d5151800000000
 191000002275422750227502274022740227402273022730227302272022720227202271022715187001870024754247502475024740247402474024730247302473024720247202472024710247151870000700
