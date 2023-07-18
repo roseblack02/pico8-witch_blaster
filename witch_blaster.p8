@@ -66,7 +66,7 @@ function _init()
 	circle_size=0
 	end_x,end_y,end_size_x,end_size_y=64,94,0,0
 	fade_timer=0
-	end_state,end_text=1,{{"at last i have defeated the","the evil spirits! i'm finally","free"},{"","",""}}
+	end_state,end_text=1,{{"at last i have defeated the","the evil spirits! i'm finally","free..."},{"","",""}}
 
 	--store
 	blink_timer=0
