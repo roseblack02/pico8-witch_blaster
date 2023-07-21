@@ -39,7 +39,7 @@ function _init()
 	test_cheats=false
 
 	--intro
-	intro_x,intro_y=32,64
+	intro_x,intro_y,intro_size_x,intro_size_y=32,64,58,48
 	intro_angle=0
 	intro_state,intro_text=1,{{"dark forces lurk in this","forest, sapping my magical","energy..."},{"i need to smoke these evil","spirits and free myself from ","their clutches!"}}
 
@@ -400,15 +400,27 @@ function update_intro()
 	if (front_tree_x<-127) front_tree_x=0
 
 	--bob character
-	intro_y+=sin(intro_angle)*1
-	if(intro_angle>10)intro_angle=0
-    intro_angle+=0.01
+	if intro_state<3 then
+		intro_y+=sin(intro_angle)*1
+		if(intro_angle>10)intro_angle=0
+	    intro_angle+=0.01
+	end
+
+    --shrink character
+    if intro_state>2 then
+		if(intro_size_x>16)intro_size_x-=58/35
+		if(intro_size_y>15)intro_size_y-=48/35
+
+		--move character down
+		if(intro_y>64)intro_y-=1
+		if(intro_y<64)intro_y+=1
+	end
 
     --advance dialogue
-    if(btnp(5)) sfx(7) intro_state+=1
+    if(btnp(5) and intro_state<3) sfx(7) intro_state+=1
 
     --start game
-    if intro_state>2 then
+    if intro_size_x<18 then
     	reset_info() 
     	if(music_on=="on")music(-1,0,7)
     end
@@ -424,19 +436,21 @@ function draw_intro()
 	rectfill(0,96,128,128,3)
 	map(map_x,0)
 
-	--character
-	sspr(72,32,29,24,intro_x,intro_y,58,48)
+	--draw character 29:24 ratio for x:y
+	sspr(72,32,29,24,intro_x,intro_y-(intro_size_y/2),intro_size_x,intro_size_y)
 
-	--text bubble
-	rectfill(0,0,128,36,1)
-	outlined_text("◆",40,33,7,1)
-	rectfill(0,0,128,34,7)
+	if intro_state<3 then
+		--text bubble
+		rectfill(0,0,128,36,1)
+		outlined_text("◆",40,33,7,1)
+		rectfill(0,0,128,34,7)
 
-	--text
-	for i=1,3 do
-		if(intro_state)print(intro_text[intro_state][i],2,-6+(i*8),1)
+		--text
+		for i=1,3 do
+			if(intro_state)print(intro_text[intro_state][i],2,-6+(i*8),1)
+		end
+		print("❎",119,28,1)
 	end
-	print("❎",119,28,1)
 end
 
 function update_game()
@@ -802,6 +816,13 @@ function update_end()
     if end_state>2 then
     	state="menu"
     	if(music_on=="on")music(2)
+
+    	--reset things for intro and ending animation
+    	intro_x,intro_y,intro_size_x,intro_size_y=32,64,58,48
+		circle_size=0
+		end_x,end_y,end_size_x,end_size_y=64,94,0,0
+		fade_timer=0
+		boss_dead=false
     end
 end
 
@@ -1436,8 +1457,8 @@ function reset_info()
 	if state=="intro" then 
 		player.lives,player.dmg,player.mag_level,player.blast_dur,player.e_gained,player.e_drain=3,1,0,2,5,0.15
 		e_upgrades,drain_upgrades,dmg_upgrades,blast_upgrades,magic_upgrades=1,1,1,1
+
 		level,tutorial_state=1,1
-		boss_dead=false
 	end
 
 	--test cheats
