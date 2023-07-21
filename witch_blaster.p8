@@ -643,7 +643,7 @@ function draw_game()
 			if(i==1 and tutorial_state==1) offset=6 else offset=0
 			--change colour of last line
 			local colour=7
-			if(i==#tutorial_text[tutorial_state]) colour=8 else colour=7
+			if(i==#tutorial_text[tutorial_state]) colour=12 else colour=7
 			outlined_text(tutorial_text[tutorial_state][i],63-offset-(#tutorial_text[tutorial_state][i]*2),4+i*8,colour,1)
 		end
 
@@ -834,7 +834,7 @@ function draw_end()
 
 		--text
 		for i=1,3 do
-			if(intro_state<3)print(end_text[end_state][i],2,-6+(i*8),1)
+			print(end_text[end_state][i],2,-6+(i*8),1)
 		end
 		print("❎",119,28,1)
 	end
@@ -1190,7 +1190,7 @@ function make_egg(x,y)
 				if(self.y==64)circle_size+=0.35 circle_size=mid(0,circle_size,128,7) sfx(9)
 
 				--screen shake when circle is growing then stop and go to end state
-				if(circle_size>126)camera(0,0) state="end" music(2) fade_timer=0 else screen_shake(0.05) 
+				if(circle_size>126)camera(0,0) state="end" music(2) end_state=1 fade_timer=0 else screen_shake(0.05) 
 			end
 		end,
 		draw=function(self)
@@ -1419,6 +1419,9 @@ function reset_info()
 	--remove old bullets
 	remove(bullet_objs)
 
+	--remove old pickups
+	remove(pickup_objs)
+
 	--remove old enemies
 	remove(enemy_objs)
 
@@ -1433,6 +1436,8 @@ function reset_info()
 	if state=="intro" then 
 		player.lives,player.dmg,player.mag_level,player.blast_dur,player.e_gained,player.e_drain=3,1,0,2,5,0.15
 		e_upgrades,drain_upgrades,dmg_upgrades,blast_upgrades,magic_upgrades=1,1,1,1
+		level,tutorial_state=1,1
+		boss_dead=false
 	end
 
 	--test cheats
