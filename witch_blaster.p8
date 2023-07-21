@@ -24,7 +24,7 @@ __lua__
 ]]--
 
 function _init()
-	state="end"
+	state="menu"
 	frame=0
 	music(2)
 	--menu
@@ -41,7 +41,7 @@ function _init()
 	--intro
 	intro_x,intro_y=32,64
 	intro_angle=0
-	intro_state,intro_text=1,{{"dark forces lurk in this","forest, sapping the magical","energy from local residents..."},{"i need to track down and smoke","these evil spirits so that i","can live as my true self"}}
+	intro_state,intro_text=1,{{"dark forces lurk in this","forest, sapping my magical","energy..."},{"i need to smoke these evil","spirits and free myself from ","their clutches!"}}
 
 	--game
 	map_x,front_tree_x,back_tree_x=0,0,0
@@ -66,7 +66,7 @@ function _init()
 	circle_size=0
 	end_x,end_y,end_size_x,end_size_y=64,94,0,0
 	fade_timer=0
-	end_state,end_text=1,{{"at last i have defeated the","the evil spirits! i'm finally","free..."},{"","",""}}
+	end_state,end_text=1,{{"at last i have defeated the","evil spirits and regained my","energy..."},{"i no longer feel drained. im","finally free to live as true","self!"}}
 
 	--store
 	blink_timer=0
@@ -434,7 +434,7 @@ function draw_intro()
 
 	--text
 	for i=1,3 do
-		if(intro_state<3)print(intro_text[intro_state][i],2,-6+(i*8),1)
+		if(intro_state)print(intro_text[intro_state][i],2,-6+(i*8),1)
 	end
 	print("❎",119,28,1)
 end
@@ -641,7 +641,10 @@ function draw_game()
 			--offset used due to multiple symbols in the first line of the first text
 			local offset=0
 			if(i==1 and tutorial_state==1) offset=6 else offset=0
-			outlined_text(tutorial_text[tutorial_state][i],63-offset-(#tutorial_text[tutorial_state][i]*2),4+i*8,7,1)
+			--change colour of last line
+			local colour=7
+			if(i==#tutorial_text[tutorial_state]) colour=8 else colour=7
+			outlined_text(tutorial_text[tutorial_state][i],63-offset-(#tutorial_text[tutorial_state][i]*2),4+i*8,colour,1)
 		end
 
 		--arrows
@@ -794,6 +797,12 @@ function update_end()
 
      --advance dialogue
     if(btnp(5) and end_size_x>64) sfx(7) end_state+=1
+
+    --start game
+    if end_state>2 then
+    	state="menu"
+    	if(music_on=="on")music(2)
+    end
 end
 
 function draw_end()
