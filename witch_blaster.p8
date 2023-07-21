@@ -59,7 +59,7 @@ function _init()
 	message=""
 
 	--tutorial info
-	pause,tutorial_state,tutorial_text=false,1,{{"⬇️⬆️⬅️➡️ to move","❎/x to shoot","🅾️/z to continue"},{"your estrogen is","always draining","watch the bar below","enemies and pills fill it up","🅾️/z to continue"},{"enemies drop pills,","magic, coins, and","random powerups","🅾️/z to continue"},{"blast using 🅾️/z","when magic is at 100%","🅾️/z to continue"}}
+	pause,tutorial_state,tutorial_text=false,1,{{"⬇️⬆️⬅️➡️ to move","❎/x to shoot","🅾️/z to continue"},{"your energy is","always draining","watch the bar below","enemies and orbs fill it up","🅾️/z to continue"},{"enemies drop orbs,","magic, coins, and","random powerups","🅾️/z to continue"},{"blast using 🅾️/z","when magic is at 100%","🅾️/z to continue"}}
 
 	--final boss animation
 	boss_dead=false
@@ -763,8 +763,8 @@ function draw_shop()
 		print("blast $15",5,66,1)
 		print("leave",5,74,1)
 
-		if(cursor.y==34) outlined_text("increase estrogen gained ",3,91,7,1) outlined_text("from enemies "..e_upgrades.."/3",3,99,7,1) outlined_text("🅾️ to purchase",3,107,7,1)
-		if(cursor.y==42) outlined_text("slows down the draining ",3,91,7,1) outlined_text("of estrogen "..drain_upgrades.."/5",3,99,7,1) outlined_text("🅾️ to purchase",3,107,7,1)
+		if(cursor.y==34) outlined_text("increase energy gained ",3,91,7,1) outlined_text("from enemies "..e_upgrades.."/3",3,99,7,1) outlined_text("🅾️ to purchase",3,107,7,1)
+		if(cursor.y==42) outlined_text("slows down the draining ",3,91,7,1) outlined_text("of energy "..drain_upgrades.."/5",3,99,7,1) outlined_text("🅾️ to purchase",3,107,7,1)
 		if(cursor.y==50) outlined_text("increase damage dealt "..dmg_upgrades.."/5",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
 		if(cursor.y==58) outlined_text("purchase extra lives ",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
 		if(cursor.y==66) outlined_text("increase blast duration "..blast_upgrades.."/3",3,91,7,1) outlined_text("🅾️ to purchase",3,99,7,1)
@@ -907,7 +907,7 @@ function make_enemy_obj(name,x,y,props)
 						local rand=flr(rnd(9))+1
 
 						if (rand==1) make_powerup(self.x,self.y)
-						if (rand>1 and rand<4) make_estrogen(self.x,self.y)
+						if (rand>1 and rand<4) make_energy(self.x,self.y)
 						if (rand>3 and rand<5) make_magic(self.x,self.y)
 						if (rand>4) make_coin(self.x,self.y)
 
@@ -1300,7 +1300,7 @@ function make_pickup_obj(name,x,y,props)
 end
 
 --e pickup
-function make_estrogen(x,y)
+function make_energy(x,y)
 	return make_pickup_obj("health",x,y,{
 		update=function(self)
 			self.x-=0.25
