@@ -7,20 +7,11 @@ __lua__
 	maybe an extra level or 2? 
 	
 	refine tutorial level
-	refine egg boss level
+	refine final boss level
 	
 	game music
 	end screen music
 	at least 1 boss song ideally 2
-	
-	make little ending animation (say something frickin cool like "get smoked babee B)")
-	
-	make intro animation with story text (say somthin like "i need to ice that fool >:(")
-	
-	refine enemies
-	refine movement
-	refine sprites
-	refine shop look and prices
 ]]--
 
 function _init()
@@ -273,9 +264,6 @@ function _init()
 
 		end
 	}
-
-	--mouse temp
-	poke(0x5f2d, 1)
 end
 
 function _update60()
@@ -294,10 +282,6 @@ function _update60()
 	--count frames
 	frame+=1
 	if (frame>60) frame=0
-
-	--mouse temp
-	mouse_x=stat(32)
-	mouse_y=stat(33)
 end
 
 function _draw()
@@ -312,17 +296,6 @@ function _draw()
 	elseif state=="end" then
 		draw_end()
 	end
-
-	--debug info
-	print("mx:"..mouse_x,0,114,8)
-	print("my:"..mouse_y,0,122,8)
-	pset(mouse_x,mouse_y,8)
-
-	print("px:"..flr(player.x),25,114,2)
-	print("py:"..flr(player.y),25,122,2)
-
-	print("lt:"..flr(level_timer),50,114,14)
-	print("ec:"..#enemy_objs,50,122,14)
 end
 
 --game states
@@ -1539,7 +1512,7 @@ function outlined_sprites(sprite,colour,x,y,width,height,flip_x,flip_y)
 	pal()
 
 	if game_pal=="trans" then
-		pal({-15,-14,2,-3,-4,6,7,-8,13,14,-3,12,13,14,6},1)
+		pal({-15,-14,2,-3,-4,6,7,-8,6,7,-3,12,13,14,6},1)
 	else
 		pal({1,2,3,4,5,6,7,8,9,10,-5},1)
 	end
