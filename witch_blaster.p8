@@ -1179,7 +1179,15 @@ function make_egg(x,y)
 				if(self.y==64)circle_size+=0.35 circle_size=mid(0,circle_size,128,7) sfx(9)
 
 				--screen shake when circle is growing then stop and go to end state
-				if(circle_size>126)camera(0,0) state="end" music(2) end_state=1 fade_timer=0 else screen_shake(0.05) 
+				if circle_size>126  then 
+					camera(0,0) 
+					state="end" 
+					if(music_on=="on")music(2)
+					end_state=1 
+					fade_timer=0 
+				else 
+					screen_shake(0.05)
+				end 
 			end
 		end,
 		draw=function(self)
