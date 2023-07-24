@@ -20,7 +20,7 @@ function _init()
 	music(2)
 	--menu
 	witch_y,blaster_x=-20,-100
-	game_pal="normal"
+	game_pal="original"
 	music_on="on"
 	option=1
 	menu_colour={7,7,7}
@@ -316,7 +316,7 @@ function update_menu()
 
 	if option==3 then
 		if btnp(1) or btnp(0) then
-			if(game_pal=="normal") game_pal="trans" else game_pal="normal"
+			if(game_pal=="full") game_pal="original" else game_pal="full"
 			sfx(8)
 		end
 	end
@@ -1511,7 +1511,7 @@ function outlined_sprites(sprite,colour,x,y,width,height,flip_x,flip_y)
 	--reset palette and draw sprite
 	pal()
 
-	if game_pal=="trans" then
+	if game_pal=="original" then
 		pal({-15,-14,2,-3,-4,6,7,-8,6,7,-3,12,13,14,6},1)
 	else
 		pal({1,2,3,4,5,6,7,8,9,10,-5},1)
